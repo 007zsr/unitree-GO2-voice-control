@@ -1,0 +1,81 @@
+commands:
+  stop:
+    display_name: stop
+    go2_action_type: stop_move
+    requires_duration: false
+    default_duration_sec: 0
+    max_duration_sec: 0
+    default_speed: 0
+    max_speed: 0
+    can_interrupt: true
+    requires_robot_standing: false
+  stand_up:
+    display_name: stand up
+    go2_action_type: stand_up
+    requires_duration: false
+    default_duration_sec: 0
+    max_duration_sec: 0
+    default_speed: 0
+    max_speed: 0
+    can_interrupt: true
+    requires_robot_standing: false
+  sit_down:
+    display_name: sit down
+    go2_action_type: sit
+    requires_duration: false
+    default_duration_sec: 0
+    max_duration_sec: 0
+    default_speed: 0
+    max_speed: 0
+    can_interrupt: true
+    requires_robot_standing: false
+  move_forward:
+    display_name: move forward slowly
+    go2_action_type: velocity_move
+    requires_duration: true
+    default_duration_sec: 1.0
+    max_duration_sec: 2.0
+    default_speed: 0.25
+    max_speed: 0.3
+    can_interrupt: true
+    requires_robot_standing: true
+  move_backward:
+    display_name: move backward slowly
+    go2_action_type: velocity_move
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 2.0
+    default_speed: 0.2
+    max_speed: 0.25
+    can_interrupt: true
+    requires_robot_standing: true
+  turn_left:
+    display_name: turn left slowly
+    go2_action_type: velocity_turn
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 1.0
+    default_speed: 0.45
+    max_speed: 0.5
+    can_interrupt: true
+    requires_robot_standing: true
+  turn_right:
+    display_name: turn right slowly
+    go2_action_type: velocity_turn
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 1.0
+    default_speed: 0.45
+    max_speed: 0.5
+    can_interrupt: true
+    requires_robot_standing: true
+  status_report:
+    display_name: report status
+    go2_action_type: status_report
+    requires_duration: false
+    default_duration_sec: 0
+    max_duration_sec: 0
+    default_speed: 0
+    max_speed: 0
+    can_interrupt: true
+    requires_robot_standing: false

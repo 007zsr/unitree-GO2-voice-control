@@ -1,0 +1,261 @@
+case_id,text,category,expected_is_command,expected_intents,expected_should_execute,expected_needs_confirmation,expected_risk_level,notes
+A001,Stand up please.,A_english_single,true,stand_up,true,false,safe,clear English single command
+A002,Please sit down.,A_english_single,true,sit_down,true,false,safe,clear English single command
+A003,Turn right.,A_english_single,true,turn_right,true,false,safe,clear English single command
+A004,Turn left.,A_english_single,true,turn_left,true,false,safe,clear English single command
+A005,Move forward for one second.,A_english_single,true,move_forward,true,false,safe,clear English single command
+A006,Move backward a little.,A_english_single,true,move_backward,true,false,safe,clear English single command
+A007,Stop.,A_english_single,true,stop,true,false,safe,clear English single command
+A008,Halt.,A_english_single,true,stop,true,false,safe,clear English stop alias
+A009,Freeze.,A_english_single,true,stop,true,false,safe,clear English stop alias
+A010,"Go2, stand up.",A_english_single,true,stand_up,true,false,safe,prefixed command
+A011,"Robot, sit down.",A_english_single,true,sit_down,true,false,safe,prefixed command
+A012,"Dog, turn right.",A_english_single,true,turn_right,true,false,safe,prefixed command
+A013,Please move forward slowly.,A_english_single,true,move_forward,true,false,safe,explicit slow command
+A014,Go backward a little bit.,A_english_single,true,move_backward,true,false,safe,backward alias
+A015,Rise up.,A_english_single,true,stand_up,true,false,safe,stand up alias
+A016,Get up.,A_english_single,true,stand_up,true,false,safe,stand up alias
+A017,Lie down.,A_english_single,true,stand_down,true,false,safe,stand down posture alias
+A018,Take a seat.,A_english_single,true,sit_down,true,false,safe,natural sit command
+A019,Stop moving.,A_english_single,true,stop,true,false,safe,stop alias
+A020,Do not move.,A_english_single,true,stop,true,false,safe,natural stop command
+A021,Stand up now.,A_english_single,true,stand_up,true,false,safe,imperative command
+A022,Sit.,A_english_single,true,sit_down,true,false,safe,short sit command
+A023,"Robot, stop now.",A_english_single,true,stop,true,false,safe,prefixed stop
+A024,Please go forward.,A_english_single,true,move_forward,true,false,safe,forward alias
+A025,Walk forward slowly.,A_english_single,true,move_forward,true,false,safe,forward alias
+A026,Move back.,A_english_single,true,move_backward,true,false,safe,backward alias
+A027,Backward please.,A_english_single,true,move_backward,true,false,safe,backward alias with please
+A028,Turn right slowly.,A_english_single,true,turn_right,true,false,safe,turn command with adverb
+A029,Turn left slowly.,A_english_single,true,turn_left,true,false,safe,turn command with adverb
+A030,Report status.,A_english_single,true,status_report,true,false,safe,status command
+B001,站起来。,B_chinese_single,true,stand_up,true,false,safe,clear Chinese single command
+B002,请坐下。,B_chinese_single,true,sit_down,true,false,safe,clear Chinese single command
+B003,向右转。,B_chinese_single,true,turn_right,true,false,safe,clear Chinese single command
+B004,向左转。,B_chinese_single,true,turn_left,true,false,safe,clear Chinese single command
+B005,往前走一秒。,B_chinese_single,true,move_forward,true,false,safe,clear Chinese single command
+B006,后退一点。,B_chinese_single,true,move_backward,true,false,safe,clear Chinese single command
+B007,停下。,B_chinese_single,true,stop,true,false,safe,clear Chinese stop
+B008,停止。,B_chinese_single,true,stop,true,false,safe,clear Chinese stop
+B009,别动。,B_chinese_single,true,stop,true,false,safe,clear Chinese stop
+B010,机器狗，站起来。,B_chinese_single,true,stand_up,true,false,safe,prefixed command
+B011,小狗，坐下。,B_chinese_single,true,sit_down,true,false,safe,prefixed command
+B012,请向右转。,B_chinese_single,true,turn_right,true,false,safe,polite command
+B013,请向左转。,B_chinese_single,true,turn_left,true,false,safe,polite command
+B014,往前走一点。,B_chinese_single,true,move_forward,true,false,safe,forward command
+B015,往后退一点。,B_chinese_single,true,move_backward,true,false,safe,backward command
+B016,起来。,B_chinese_single,true,stand_up,true,false,safe,natural stand command
+B017,趴下。,B_chinese_single,true,stand_down,true,false,safe,stand down posture alias
+B018,不要动。,B_chinese_single,true,stop,true,false,safe,natural stop command
+B019,停止移动。,B_chinese_single,true,stop,true,false,safe,stop movement command
+B020,原地待命。,B_chinese_single,true,stop,true,false,safe,natural hold command
+B021,起立。,B_chinese_single,true,stand_up,true,false,safe,stand up alias
+B022,坐好。,B_chinese_single,true,sit_down,true,false,safe,sit alias
+B023,向前走。,B_chinese_single,true,move_forward,true,false,safe,forward alias
+B024,向后退。,B_chinese_single,true,move_backward,true,false,safe,backward alias
+B025,往左转。,B_chinese_single,true,turn_left,true,false,safe,left turn alias
+B026,往右转。,B_chinese_single,true,turn_right,true,false,safe,right turn alias
+B027,报告状态。,B_chinese_single,true,status_report,true,false,safe,status command
+B028,电量。,B_chinese_single,true,status_report,true,false,safe,status alias
+B029,请前进。,B_chinese_single,true,move_forward,true,false,safe,forward alias
+B030,请后退。,B_chinese_single,true,move_backward,true,false,safe,backward alias
+C001,Turn right and then turn left.,C_english_sequence,true,turn_right->turn_left,true,false,safe,two command sequence
+C002,Stand up and then sit down.,C_english_sequence,true,stand_up->sit_down,true,false,safe,two command sequence
+C003,Move forward and then stop.,C_english_sequence,true,move_forward->stop,true,false,safe,stop should execute after movement
+C004,"Turn left, then turn right.",C_english_sequence,true,turn_left->turn_right,true,false,safe,two command sequence
+C005,"Stand up, then move forward.",C_english_sequence,true,stand_up->move_forward,true,false,safe,two command sequence
+C006,"Sit down, then stand up.",C_english_sequence,true,sit_down->stand_up,true,false,safe,two command sequence
+C007,"Move backward, then stop.",C_english_sequence,true,move_backward->stop,true,false,safe,stop should execute after movement
+C008,"Turn right, turn right, and then stop.",C_english_sequence,true,turn_right->turn_right->stop,true,false,safe,three command sequence
+C009,"Go2, stand up, then turn left.",C_english_sequence,true,stand_up->turn_left,true,false,safe,prefixed sequence
+C010,"Robot, turn right and then sit down.",C_english_sequence,true,turn_right->sit_down,true,false,safe,prefixed sequence
+C011,"Please move forward, then turn right.",C_english_sequence,true,move_forward->turn_right,true,false,safe,polite sequence
+C012,"Turn left, after that stop.",C_english_sequence,true,turn_left->stop,true,false,safe,after that connector
+C013,"Stand up, next move forward.",C_english_sequence,true,stand_up->move_forward,true,false,safe,next connector
+C014,"Sit down, then stop.",C_english_sequence,true,sit_down->stop,true,false,safe,stop after posture command
+C015,"Turn right, then turn left, then stop.",C_english_sequence,true,turn_right->turn_left->stop,true,false,safe,three command sequence
+C016,Please turn left and then turn right and then stop.,C_english_sequence,true,turn_left->turn_right->stop,true,false,safe,three command sequence
+C017,"Go2, move backward, then turn left.",C_english_sequence,true,move_backward->turn_left,true,false,safe,prefixed sequence
+C018,"Robot, stand up and then turn right.",C_english_sequence,true,stand_up->turn_right,true,false,safe,prefixed sequence
+C019,"Dog, turn left, turn left, then stop.",C_english_sequence,true,turn_left->turn_left->stop,true,false,safe,repeated turn in sequence
+C020,"Please stand up, then sit down, then stand up.",C_english_sequence,true,stand_up->sit_down->stand_up,true,false,safe,three posture commands
+C021,"Move forward, then move backward.",C_english_sequence,true,move_forward->move_backward,true,false,safe,two movement commands
+C022,Turn right after that move forward.,C_english_sequence,true,turn_right->move_forward,true,false,safe,after that connector
+C023,Stand up then turn right then turn left then sit down.,C_english_sequence,true,stand_up->turn_right->turn_left,true,false,safe,expected truncation after three commands
+C024,"Turn right, turn left, sit down, stand up.",C_english_sequence,true,turn_right->turn_left->sit_down,true,false,safe,expected comma truncation after three commands
+C025,Please move forward then stop then turn left.,C_english_sequence,true,move_forward->stop,true,false,safe,stop trims following command
+C026,Go2 stand up then turn right then turn left.,C_english_sequence,true,stand_up->turn_right->turn_left,true,false,safe,prefixed three command sequence
+C027,"Robot, move backward and then turn right and then stop.",C_english_sequence,true,move_backward->turn_right->stop,true,false,safe,prefixed three command sequence
+C028,Turn left next move forward next stop.,C_english_sequence,true,turn_left->move_forward->stop,true,false,safe,next connector sequence
+C029,Stand up after that move backward after that stop.,C_english_sequence,true,stand_up->move_backward->stop,true,false,safe,after that sequence
+C030,Please sit down then stand up then turn right.,C_english_sequence,true,sit_down->stand_up->turn_right,true,false,safe,posture then turn
+C031,Go forward then turn right then turn left.,C_english_sequence,true,move_forward->turn_right->turn_left,true,false,safe,three command sequence
+C032,Move back then turn left then stop.,C_english_sequence,true,move_backward->turn_left->stop,true,false,safe,three command sequence
+C033,Turn right then turn right then turn right.,C_english_sequence,true,turn_right->turn_right->turn_right,true,false,safe,repeated valid commands
+C034,Stand up then move forward then move backward.,C_english_sequence,true,stand_up->move_forward->move_backward,true,false,safe,three command sequence
+C035,Please turn left then stop then sit down.,C_english_sequence,true,turn_left->stop,true,false,safe,stop trims following command
+D001,先向左转，然后向右转。,D_chinese_sequence,true,turn_left->turn_right,true,false,safe,two command sequence
+D002,站起来，然后坐下。,D_chinese_sequence,true,stand_up->sit_down,true,false,safe,two command sequence
+D003,往前走，然后停下。,D_chinese_sequence,true,move_forward->stop,true,false,safe,stop after movement
+D004,先后退一点，再停下。,D_chinese_sequence,true,move_backward->stop,true,false,safe,stop after movement
+D005,机器狗，先站起来，然后向左转。,D_chinese_sequence,true,stand_up->turn_left,true,false,safe,prefixed sequence
+D006,请先向右转，再向左转。,D_chinese_sequence,true,turn_right->turn_left,true,false,safe,polite sequence
+D007,先坐下，然后站起来。,D_chinese_sequence,true,sit_down->stand_up,true,false,safe,posture sequence
+D008,向右转，接着停下。,D_chinese_sequence,true,turn_right->stop,true,false,safe,stop after turn
+D009,先往前走一点，然后向右转。,D_chinese_sequence,true,move_forward->turn_right,true,false,safe,movement then turn
+D010,先向左，再向右，然后停下。,D_chinese_sequence,true,turn_left->turn_right->stop,true,false,safe,fuzzy short direction sequence
+D011,先站起来，再往前走。,D_chinese_sequence,true,stand_up->move_forward,true,false,safe,stand then move
+D012,先向右转，然后坐下。,D_chinese_sequence,true,turn_right->sit_down,true,false,safe,turn then posture
+D013,请往后退，然后停下。,D_chinese_sequence,true,move_backward->stop,true,false,safe,backward then stop
+D014,小狗，向左转，然后向右转。,D_chinese_sequence,true,turn_left->turn_right,true,false,safe,prefixed sequence
+D015,先站起来，然后向右转，然后停下。,D_chinese_sequence,true,stand_up->turn_right->stop,true,false,safe,three command sequence
+D016,先往前走，再往后退。,D_chinese_sequence,true,move_forward->move_backward,true,false,safe,two movement commands
+D017,向左转，向右转，停下。,D_chinese_sequence,true,turn_left->turn_right->stop,true,false,safe,comma sequence
+D018,先坐下，再站起来，然后向左转。,D_chinese_sequence,true,sit_down->stand_up->turn_left,true,false,safe,posture then turn
+D019,请先后退，再向右转。,D_chinese_sequence,true,move_backward->turn_right,true,false,safe,backward then turn
+D020,机器狗，先向右转，接着向左转。,D_chinese_sequence,true,turn_right->turn_left,true,false,safe,prefixed sequence
+D021,先往前走，然后停下，然后坐下。,D_chinese_sequence,true,move_forward->stop,true,false,safe,stop trims following command
+D022,先站起来，然后往前走，然后后退，然后停下。,D_chinese_sequence,true,stand_up->move_forward->move_backward,true,false,safe,expected truncation after three commands
+D023,请向左转，再停下。,D_chinese_sequence,true,turn_left->stop,true,false,safe,turn then stop
+D024,先右转，再左转。,D_chinese_sequence,true,turn_right->turn_left,true,false,safe,short Chinese turn aliases
+D025,先前进，再停止。,D_chinese_sequence,true,move_forward->stop,true,false,safe,forward then stop
+E001,Go2，向右转。,E_mixed_language,true,turn_right,true,false,safe,mixed prefix command
+E002,Robot，坐下。,E_mixed_language,true,sit_down,true,false,safe,mixed prefix command
+E003,机器狗，turn left.,E_mixed_language,true,turn_left,true,false,safe,mixed command
+E004,小狗，stand up.,E_mixed_language,true,stand_up,true,false,safe,mixed command
+E005,Please 停下。,E_mixed_language,true,stop,true,false,safe,mixed stop
+E006,先 turn right，然后 turn left。,E_mixed_language,true,turn_right->turn_left,true,false,safe,mixed sequence
+E007,Stand up，然后坐下。,E_mixed_language,true,stand_up->sit_down,true,false,safe,mixed sequence
+E008,Go forward，然后 stop。,E_mixed_language,true,move_forward->stop,true,false,safe,mixed stop sequence
+E009,请 move backward a little.,E_mixed_language,true,move_backward,true,false,safe,mixed movement
+E010,Go2，先站起来 then turn right.,E_mixed_language,true,stand_up->turn_right,true,false,safe,mixed sequence
+E011,Robot，向左转 then stop.,E_mixed_language,true,turn_left->stop,true,false,safe,mixed stop sequence
+E012,小狗，move forward 然后停下。,E_mixed_language,true,move_forward->stop,true,false,safe,mixed stop sequence
+E013,Please 向右转 then 向左转。,E_mixed_language,true,turn_right->turn_left,true,false,safe,mixed sequence
+E014,机器狗，sit down then stand up.,E_mixed_language,true,sit_down->stand_up,true,false,safe,mixed posture sequence
+E015,Go2，turn right 然后坐下。,E_mixed_language,true,turn_right->sit_down,true,false,safe,mixed posture sequence
+E016,请 stand up，然后 move forward.,E_mixed_language,true,stand_up->move_forward,true,false,safe,mixed sequence
+E017,Robot，后退 then stop.,E_mixed_language,true,move_backward->stop,true,false,safe,mixed stop sequence
+E018,"小狗，turn left, then 向右转.",E_mixed_language,true,turn_left->turn_right,true,false,safe,mixed comma sequence
+E019,Please stop 然后坐下。,E_mixed_language,true,stop,true,false,safe,stop trims following command
+E020,Go2，move backward then turn right.,E_mixed_language,true,move_backward->turn_right,true,false,safe,mixed sequence
+F001,"I am on your left, come here.",F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F002,"I am on your right, come here.",F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F003,"I am to your left side, please come here.",F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F004,"I am to your right side, good dog, come here.",F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F005,"Your owner is on the left, turn to me.",F_fuzzy_relative,true,turn_left,true,false,safe,left owner location
+F006,"Your owner is on the right, turn to me.",F_fuzzy_relative,true,turn_right,true,false,safe,right owner location
+F007,I'm standing on your left.,F_fuzzy_relative,true,turn_left,true,false,safe,left relative statement
+F008,I'm standing on your right.,F_fuzzy_relative,true,turn_right,true,false,safe,right relative statement
+F009,"Look to your left, I am here.",F_fuzzy_relative,true,turn_left,true,false,safe,left look command
+F010,"Look to your right, I am here.",F_fuzzy_relative,true,turn_right,true,false,safe,right look command
+F011,我在你左边，过来。,F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F012,我在你右边，过来。,F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F013,主人在你左边。,F_fuzzy_relative,true,turn_left,true,false,safe,left owner location
+F014,主人在你右边。,F_fuzzy_relative,true,turn_right,true,false,safe,right owner location
+F015,我在左边，转过来。,F_fuzzy_relative,true,turn_left,true,false,safe,left relative turn
+F016,我在右边，转过来。,F_fuzzy_relative,true,turn_right,true,false,safe,right relative turn
+F017,往我这边看，我在你左边。,F_fuzzy_relative,true,turn_left,true,false,safe,left look command
+F018,往我这边看，我在你右边。,F_fuzzy_relative,true,turn_right,true,false,safe,right look command
+F019,"I am on your left side, please come here.",F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F020,"I am on your right side, please come here.",F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F021,"Please face me, I am on your left.",F_fuzzy_relative,true,turn_left,true,false,safe,left face me command
+F022,"Please face me, I am on your right.",F_fuzzy_relative,true,turn_right,true,false,safe,right face me command
+F023,Turn toward me from your left side.,F_fuzzy_relative,true,turn_left,true,false,safe,left relative turn
+F024,Turn toward me from your right side.,F_fuzzy_relative,true,turn_right,true,false,safe,right relative turn
+F025,我在你左手边，过来。,F_fuzzy_relative,true,turn_left,true,false,safe,left hand side relative
+F026,我在你右手边，过来。,F_fuzzy_relative,true,turn_right,true,false,safe,right hand side relative
+F027,主人在左边，转过来。,F_fuzzy_relative,true,turn_left,true,false,safe,left owner turn
+F028,主人在右边，转过来。,F_fuzzy_relative,true,turn_right,true,false,safe,right owner turn
+F029,"Come here, I am on your left.",F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F030,"Come here, I am on your right.",F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F031,小狗，我在你左边，过来。,F_fuzzy_relative,true,turn_left,true,false,safe,prefixed left relative
+F032,小狗，我在你右边，过来。,F_fuzzy_relative,true,turn_right,true,false,safe,prefixed right relative
+F033,"Good dog, I am to your left, come here.",F_fuzzy_relative,true,turn_left,true,false,safe,left relative should only turn
+F034,"Good dog, I am to your right, come here.",F_fuzzy_relative,true,turn_right,true,false,safe,right relative should only turn
+F035,我在左边，你看过来。,F_fuzzy_relative,true,turn_left,true,false,safe,left relative look
+G001,Come here.,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G002,"Good dog, come here.",G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G003,Please come here.,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G004,Come to me.,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G005,Can you come here?,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G006,Could you come closer?,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G007,过来。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G008,来这里。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G009,到我这边来。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G010,小狗，过来。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G011,狗狗，来我这里。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G012,你能过来吗？,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G013,靠近我一点。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G014,Please come closer.,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G015,Move closer to me.,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G016,"Robot, come here.",G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G017,"Go2, come to me.",G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G018,小狗，来这里。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G019,请过来。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+G020,到主人这边来。,G_come_here_no_direction,true,unknown_relative_move,false,true,safe,no direction should not move forward
+H001,I said sit down in the example.,H_chitchat_false_positive,false,,false,false,none,example sentence should not execute
+H002,The phrase turn right appears in this sentence.,H_chitchat_false_positive,false,,false,false,none,quoted phrase should not execute
+H003,Today I learned how to move forward.,H_chitchat_false_positive,false,,false,false,none,discussion sentence should not execute
+H004,Please do not actually turn left.,H_chitchat_false_positive,false,,false,false,none,negative instruction should not execute
+H005,"If I say stop, it does not mean stop now.",H_chitchat_false_positive,false,,false,false,none,example stop should not execute
+H006,We are talking about a dog that can sit down.,H_chitchat_false_positive,false,,false,false,none,discussion sentence should not execute
+H007,This is a test about moving forward.,H_chitchat_false_positive,false,,false,false,none,test description should not execute
+H008,Right now I am writing text.,H_chitchat_false_positive,false,,false,false,none,direction word in sentence
+H009,Left and right are directions.,H_chitchat_false_positive,false,,false,false,none,direction words only
+H010,Forward is just a word here.,H_chitchat_false_positive,false,,false,false,none,direction word only
+H011,我刚才说了坐下这个词。,H_chitchat_false_positive,false,,false,false,none,example sentence should not execute
+H012,这句话里面有向右转三个字。,H_chitchat_false_positive,false,,false,false,none,quoted phrase should not execute
+H013,今天我们讨论前进这个概念。,H_chitchat_false_positive,false,,false,false,none,discussion sentence should not execute
+H014,不要真的向左转。,H_chitchat_false_positive,false,,false,false,none,negative instruction should not execute
+H015,我说停下这个词只是举例。,H_chitchat_false_positive,false,,false,false,none,example stop should not execute
+H016,这里的坐下不是命令。,H_chitchat_false_positive,false,,false,false,none,negated command mention
+H017,向前走只是一个测试词。,H_chitchat_false_positive,false,,false,false,none,test phrase should not execute
+H018,左右只是方向。,H_chitchat_false_positive,false,,false,false,none,direction words only
+H019,前进只是一个词。,H_chitchat_false_positive,false,,false,false,none,direction word only
+H020,停止不是当前命令。,H_chitchat_false_positive,false,,false,false,none,negated stop mention
+H021,This document mentions stand up as an example.,H_chitchat_false_positive,false,,false,false,none,example sentence should not execute
+H022,The robot command stop is only a word here.,H_chitchat_false_positive,false,,false,false,none,quoted stop should not execute
+H023,Please do not treat move backward as a command.,H_chitchat_false_positive,false,,false,false,none,negative instruction should not execute
+H024,我在写“向右转”的测试文本。,H_chitchat_false_positive,false,,false,false,none,quoted command should not execute
+H025,请不要把坐下当成命令。,H_chitchat_false_positive,false,,false,false,none,negative instruction should not execute
+I001,turn life,I_asr_near_misrecognition,false,,false,true,none,ambiguous ASR text should not execute
+I002,turn live,I_asr_near_misrecognition,false,,false,true,none,ambiguous ASR text should not execute
+I003,turn light,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I004,turn ride,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I005,turn off the turn right,I_asr_near_misrecognition,false,,false,true,none,turn off ambiguity should not execute
+I006,turn of the turn right,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I007,sit town,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I008,stand town,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I009,move for word,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I010,move foreword,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I011,stop it maybe,I_asr_near_misrecognition,false,,false,false,none,uncertain stop should not execute
+I012,right,I_asr_near_misrecognition,false,,false,false,none,single direction fragment should not execute
+I013,left,I_asr_near_misrecognition,false,,false,false,none,single direction fragment should not execute
+I014,forward,I_asr_near_misrecognition,false,,false,false,none,single direction fragment should not execute
+I015,back,I_asr_near_misrecognition,false,,false,false,none,single direction fragment should not execute
+I016,life right,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I017,turn write,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I018,sit dawn,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I019,stand app,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+I020,move bark,I_asr_near_misrecognition,false,,false,false,none,near miss should not execute
+J001,Do a front flip.,J_dangerous_disabled,true,front_flip,false,true,dangerous,dangerous catalog action should not execute
+J002,Back flip.,J_dangerous_disabled,true,back_flip,false,true,dangerous,dangerous catalog action should not execute
+J003,Jump forward.,J_dangerous_disabled,true,front_jump,false,true,dangerous,dangerous catalog action should not execute
+J004,Pounce forward.,J_dangerous_disabled,true,front_pounce,false,true,dangerous,dangerous catalog action should not execute
+J005,Run fast.,J_dangerous_disabled,true,trot_run,false,true,dangerous,dangerous catalog action should not execute
+J006,Do a handstand.,J_dangerous_disabled,true,hand_stand,false,true,dangerous,dangerous catalog action should not execute
+J007,Flip to the left.,J_dangerous_disabled,true,left_flip,false,true,dangerous,dangerous catalog action should not execute
+J008,Dance for me.,J_dangerous_disabled,true,dance1,true,false,caution,caution action may be simulated in mock
+J009,Do dance one.,J_dangerous_disabled,true,dance1,true,false,caution,caution action may be simulated in mock
+J010,Do dance two.,J_dangerous_disabled,true,dance2,true,false,caution,caution action may be simulated in mock
+J011,Front jump.,J_dangerous_disabled,true,front_jump,false,true,dangerous,dangerous catalog action should not execute
+J012,Free jump.,J_dangerous_disabled,true,free_jump,false,true,dangerous,dangerous catalog action should not execute
+J013,Scrape.,J_dangerous_disabled,true,scrape,false,true,dangerous,dangerous catalog action should not execute
+J014,Walk upright.,J_dangerous_disabled,true,walk_upright,false,true,dangerous,dangerous catalog action should not execute
+J015,Switch joystick mode.,J_dangerous_disabled,true,switch_joystick,false,true,disabled,disabled action should not execute
+J016,前空翻。,J_dangerous_disabled,true,front_flip,false,true,dangerous,dangerous catalog action should not execute
+J017,后空翻。,J_dangerous_disabled,true,back_flip,false,true,dangerous,dangerous catalog action should not execute
+J018,向前扑。,J_dangerous_disabled,true,front_pounce,false,true,dangerous,dangerous catalog action should not execute
+J019,跳舞。,J_dangerous_disabled,true,dance1,true,false,caution,caution action may be simulated in mock
+J020,切换手柄模式。,J_dangerous_disabled,true,switch_joystick,false,true,disabled,disabled action should not execute

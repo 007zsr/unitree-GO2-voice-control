@@ -1,0 +1,12 @@
+PyYAML>=6.0
+requests>=2.31.0
+openai-whisper>=20231117
+sounddevice>=0.4.6
+soundfile>=0.12.1
+numpy>=1.24.0
+opencv-python>=4.8.0
+
+# Required only for real Unitree Go2 control.
+# Install from the official repository after CycloneDDS is available:
+# git clone https://github.com/unitreerobotics/unitree_sdk2_python.git
+# cd unitree_sdk2_python && pip install -e .

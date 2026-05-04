@@ -1,0 +1,8 @@
+app.title: "Go2 语音控制台"
+button.start_listening: "开始监听"
+button.stop_listening: "停止监听"
+button.one_shot_voice: "一次性语音"
+button.one_shot_text: "一次性文本"
+button.settings: "设置"
+label.asr_result: "语音识别结果"
+label.nlu_result: "语义理解结果"

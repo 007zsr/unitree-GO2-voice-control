@@ -1,0 +1,1 @@
+"""Command normalization and catalog."""

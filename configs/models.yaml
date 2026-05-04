@@ -1,0 +1,48 @@
+asr:
+  provider: whisper
+  model_size: base
+  download_root: models/whisper
+  language: auto
+  task: transcribe
+  fp16: false
+  temperature: 0
+  condition_on_previous_text: false
+  initial_prompt: ""
+  no_speech_threshold: 0.6
+  silence_rms_threshold: 0.01
+  min_audio_bytes: 512
+  device: auto
+  allow_tiny_on_low_power: true
+  require_asr: false
+
+asr_pipeline:
+  mode: single_worker
+  fast_model: tiny
+  full_model: base
+  enable_dual_stage: false
+
+whisper:
+  enabled: true
+  name: base
+  model_name: base
+  model_dir: models/whisper
+  download_root: models/whisper
+  allow_download: false
+  language: auto
+  task: transcribe
+  fp16: false
+  temperature: 0
+  condition_on_previous_text: false
+  initial_prompt: ""
+
+qwen:
+  provider: rule_based
+  mode: rule_based
+  local_model_dir: models/qwen
+  allow_download: false
+  endpoint: ""
+  api_key_env: QWEN_API_KEY
+  model: qwen-plus
+  timeout_sec: 8
+  temperature: 0
+  allow_rule_fallback: true

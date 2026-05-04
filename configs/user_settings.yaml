@@ -1,0 +1,10 @@
+ui:
+  language: en
+recognition:
+  preference: english_preferred
+command_detection:
+  mode: strict
+continuous_listening:
+  deduplicate_enabled: true
+  deduplicate_window_sec: 3.0
+  same_intent_cooldown_sec: 2.5

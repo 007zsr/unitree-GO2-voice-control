@@ -1,0 +1,69 @@
+app_name: go2_voice_control
+environment: development
+robot_mode: mock
+enable_real_robot: false
+log_dir: runtime_data/logs
+logging:
+  root_dir: runtime_data/logs
+  keep_days: 14
+  max_session_logs: 100
+  max_one_shot_logs: 500
+  max_continuous_logs: 100
+  auto_cleanup: false
+command_queue:
+  worker_poll_sec: 0.05
+  wait_after_stop_sec: 0.2
+gui:
+  enabled: true
+  theme: simple_dark
+  show_raw_audio: false
+  show_pipeline_debug: true
+ui:
+  language: en
+recognition:
+  preference: english_preferred
+audio:
+  input_device: default
+  one_shot_record_sec: 4
+  continuous_chunk_sec: 3
+  temp_dir: runtime_data/temp_audio
+  debug_dir: runtime_data/debug_audio
+  require_microphone: false
+listening:
+  mode: rolling_window
+  window_sec: 4.0
+  hop_sec: 1.5
+  min_rms: 0.01
+  max_queue_size: 3
+  deduplicate_sec: 3.0
+  continuous_enabled: true
+  require_is_command: true
+  ignore_non_command_text: true
+  max_pending_segments: 1
+continuous_listening:
+  deduplicate_enabled: true
+  deduplicate_window_sec: 3.0
+  same_intent_cooldown_sec: 2.5
+  transcript_similarity_threshold: 0.75
+  deduplicate_plan_enabled: true
+  deduplicate_plan_window_sec: 3.0
+command_plan:
+  enabled: true
+  max_commands_per_utterance: 3
+  command_gap_sec: 0.3
+  stop_plan_on_rejection: true
+fuzzy_command:
+  enabled: true
+  min_confidence_to_execute: 0.65
+  require_confirmation_below: 0.65
+  allow_relative_turn: true
+  allow_auto_move_to_speaker: false
+command_detection:
+  mode: strict
+  strict_min_confidence_to_execute: 0.70
+  relaxed_min_confidence_to_execute: 0.50
+  ambiguous_needs_confirmation: true
+  require_command_phrase_in_strict: true
+  command_prefixes:
+    zh: [机器狗, 小狗, 狗狗, 请]
+    en: [go2, robot, dog, please]

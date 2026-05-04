@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# The current GUI uses tkinter. PySide6 is optional for future GUI expansion,
+# but including it keeps the Python dependency set aligned with Windows.
+PySide6>=6.6.0

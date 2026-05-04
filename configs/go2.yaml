@@ -1,0 +1,15 @@
+robot_mode: mock
+enable_real_robot: false
+network_interface: ""
+sdk_domain_id: 0
+connection_timeout_sec: 5
+state_read_timeout_sec: 1
+robot_ip: ""
+require_preflight_pass: true
+require_emergency_stop_test: true
+require_low_speed_test: true
+motion:
+  forward_speed_mps: 0.25
+  backward_speed_mps: 0.2
+  turn_speed_radps: 0.45
+  movement_tick_sec: 0.05

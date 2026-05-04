@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Runtime data
+runtime_data/**
+!runtime_data/
+!runtime_data/logs/
+!runtime_data/logs/gui_sessions/
+!runtime_data/logs/one_shot/
+!runtime_data/logs/continuous/
+!runtime_data/logs/errors/
+!runtime_data/logs/index/
+!runtime_data/logs/events/
+!runtime_data/debug_audio/
+!runtime_data/temp_audio/
+!runtime_data/**/.gitkeep
+logs/
+debug_audio/
+temp_audio/
+*.wav
+*.log
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Audit / temporary reports
+project_audit/
+audits/**
+!audits/
+!audits/.gitkeep
+backup_before_structure_cleanup/
+
+# Large model files - do not commit to normal Git
+models/whisper/*.pt
+models/whisper/*.pth
+models/whisper/*.onnx
+models/whisper/*.gguf
+models/qwen/**/*.bin
+models/qwen/**/*.safetensors
+models/qwen/**/*.pt
+models/qwen/**/*.onnx
+models/qwen/**/*.gguf
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.onnx
+*.gguf
+
+# Keep model directory structure
+!models/README.md
+!models/whisper/.gitkeep
+!models/qwen/.gitkeep
+
+# Package cache
+wheelhouse/

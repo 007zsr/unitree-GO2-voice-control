@@ -1,0 +1,8 @@
+app.title: "Go2 Voice Control Console"
+button.start_listening: "Start listening"
+button.stop_listening: "Stop listening"
+button.one_shot_voice: "One-shot voice"
+button.one_shot_text: "One-shot text"
+button.settings: "Settings"
+label.asr_result: "ASR Result"
+label.nlu_result: "NLU Result"

@@ -1,0 +1,666 @@
+generated_by: 'scripts/check/scan_go2_sport_actions.py'
+sources: ['https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py', 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_api.py']
+actions:
+  damp:
+    official_name: 'Damp'
+    sdk_method: 'Damp'
+    sdk_api_id: 1001
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  balance_stand:
+    official_name: 'BalanceStand'
+    sdk_method: 'BalanceStand'
+    sdk_api_id: 1002
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  stop_move:
+    official_name: 'StopMove'
+    sdk_method: 'StopMove'
+    sdk_api_id: 1003
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  stand_up:
+    official_name: 'StandUp'
+    sdk_method: 'StandUp'
+    sdk_api_id: 1004
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  stand_down:
+    official_name: 'StandDown'
+    sdk_method: 'StandDown'
+    sdk_api_id: 1005
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  recovery_stand:
+    official_name: 'RecoveryStand'
+    sdk_method: 'RecoveryStand'
+    sdk_api_id: 1006
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  euler:
+    official_name: 'Euler'
+    sdk_method: 'Euler'
+    sdk_api_id: 1007
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['roll', 'pitch', 'yaw']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  move:
+    official_name: 'Move'
+    sdk_method: 'Move'
+    sdk_api_id: 1008
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['vx', 'vy', 'vyaw']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  sit:
+    official_name: 'Sit'
+    sdk_method: 'Sit'
+    sdk_api_id: 1009
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  rise_sit:
+    official_name: 'RiseSit'
+    sdk_method: 'RiseSit'
+    sdk_api_id: 1010
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  speed_level:
+    official_name: 'SpeedLevel'
+    sdk_method: 'SpeedLevel'
+    sdk_api_id: 1015
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['level']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  hello:
+    official_name: 'Hello'
+    sdk_method: 'Hello'
+    sdk_api_id: 1016
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  stretch:
+    official_name: 'Stretch'
+    sdk_method: 'Stretch'
+    sdk_api_id: 1017
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  content:
+    official_name: 'Content'
+    sdk_method: 'Content'
+    sdk_api_id: 1020
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  dance1:
+    official_name: 'Dance1'
+    sdk_method: 'Dance1'
+    sdk_api_id: 1022
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  dance2:
+    official_name: 'Dance2'
+    sdk_method: 'Dance2'
+    sdk_api_id: 1023
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  switch_joystick:
+    official_name: 'SwitchJoystick'
+    sdk_method: 'SwitchJoystick'
+    sdk_api_id: 1027
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['on']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  pose:
+    official_name: 'Pose'
+    sdk_method: 'Pose'
+    sdk_api_id: 1028
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  scrape:
+    official_name: 'Scrape'
+    sdk_method: 'Scrape'
+    sdk_api_id: 1029
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  front_flip:
+    official_name: 'FrontFlip'
+    sdk_method: 'FrontFlip'
+    sdk_api_id: 1030
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  front_jump:
+    official_name: 'FrontJump'
+    sdk_method: 'FrontJump'
+    sdk_api_id: 1031
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  front_pounce:
+    official_name: 'FrontPounce'
+    sdk_method: 'FrontPounce'
+    sdk_api_id: 1032
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  heart:
+    official_name: 'Heart'
+    sdk_method: 'Heart'
+    sdk_api_id: 1036
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  static_walk:
+    official_name: 'StaticWalk'
+    sdk_method: 'StaticWalk'
+    sdk_api_id: 1061
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  trot_run:
+    official_name: 'TrotRun'
+    sdk_method: 'TrotRun'
+    sdk_api_id: 1062
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  economic_gait:
+    official_name: 'EconomicGait'
+    sdk_method: ''
+    sdk_api_id: 1063
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: false
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  left_flip:
+    official_name: 'LeftFlip'
+    sdk_method: 'LeftFlip'
+    sdk_api_id: 2041
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  back_flip:
+    official_name: 'BackFlip'
+    sdk_method: 'BackFlip'
+    sdk_api_id: 2043
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  hand_stand:
+    official_name: 'HandStand'
+    sdk_method: 'HandStand'
+    sdk_api_id: 2044
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  free_walk:
+    official_name: 'FreeWalk'
+    sdk_method: 'FreeWalk'
+    sdk_api_id: 2045
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  free_bound:
+    official_name: 'FreeBound'
+    sdk_method: 'FreeBound'
+    sdk_api_id: 2046
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  free_jump:
+    official_name: 'FreeJump'
+    sdk_method: 'FreeJump'
+    sdk_api_id: 2047
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  free_avoid:
+    official_name: 'FreeAvoid'
+    sdk_method: 'FreeAvoid'
+    sdk_api_id: 2048
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  classic_walk:
+    official_name: 'ClassicWalk'
+    sdk_method: 'ClassicWalk'
+    sdk_api_id: 2049
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  walk_upright:
+    official_name: 'WalkUpright'
+    sdk_method: 'WalkUpright'
+    sdk_api_id: 2050
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  cross_step:
+    official_name: 'CrossStep'
+    sdk_method: 'CrossStep'
+    sdk_api_id: 2051
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['flag']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  auto_recovery_set:
+    official_name: 'AutoRecoverySet'
+    sdk_method: 'AutoRecoverySet'
+    sdk_api_id: 2054
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: ['enabled']
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  auto_recovery_get:
+    official_name: 'AutoRecoveryGet'
+    sdk_method: 'AutoRecoveryGet'
+    sdk_api_id: 2055
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'
+  switch_avoid_mode:
+    official_name: 'SwitchAvoidMode'
+    sdk_method: 'SwitchAvoidMode'
+    sdk_api_id: 2058
+    official_supported: true
+    risk_level: 'disabled'
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    parameters: []
+    registered: true
+    method_present: true
+    source_file: 'https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2_python/master/unitree_sdk2py/go2/sport/sport_client.py'
+    aliases:
+      en: []
+      zh: []
+    reason: 'Generated scan output only; review and copy into go2_action_catalog.yaml before enabling.'

@@ -1,0 +1,14 @@
+target_system_name: anbangtu
+profile: pending-confirmation
+os_type: unknown
+python_min_version: "3.8"
+allow_microphone: unknown
+allow_go2_lan_access: unknown
+allow_background_process: unknown
+allow_install_cyclonedds: unknown
+gpu_required: false
+prefer_local_whisper: true
+prefer_local_qwen: false
+remote_asr_endpoint: ""
+remote_qwen_endpoint: ""
+private_paths: {}

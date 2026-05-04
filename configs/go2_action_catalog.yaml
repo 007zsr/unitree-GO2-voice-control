@@ -1,0 +1,761 @@
+version: 1
+source: "Unitree SDK2 Python Go2 SportClient high-level API"
+policy: "Catalog is the single source of truth for voice aliases, risk levels, mock availability, and real-robot availability."
+actions:
+  stop:
+    official_name: "StopMove"
+    sdk_method: "StopMove"
+    sdk_api_id: 1003
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    requires_standing: false
+    aliases:
+      en: ["stop", "stop moving", "halt", "freeze", "emergency stop", "do not move", "don't move", "hold still", "stay still", "stay there", "stand still"]
+      zh: ["停止", "停下", "别动", "立刻停止", "急停", "不要动", "原地待命", "原地别动", "保持不动", "停在原地", "别移动"]
+    description_en: "Stop current movement."
+    description_zh: "停止当前移动，最高优先级。"
+    reason: "Emergency stop remains the highest-priority command."
+
+  balance_stand:
+    official_name: "BalanceStand"
+    sdk_method: "BalanceStand"
+    sdk_api_id: 1002
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["balance stand", "balanced stand"]
+      zh: ["平衡站立", "保持站立"]
+    description_en: "Enter balanced standing mode."
+    description_zh: "进入平衡站立状态。"
+
+  stand_up:
+    official_name: "StandUp"
+    sdk_method: "StandUp"
+    sdk_api_id: 1004
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["stand up", "get up", "rise"]
+      zh: ["站起来", "起立", "站起"]
+    description_en: "Stand up."
+    description_zh: "站起来。"
+
+  stand_down:
+    official_name: "StandDown"
+    sdk_method: "StandDown"
+    sdk_api_id: 1005
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["stand down", "lie down"]
+      zh: ["趴下", "卧倒"]
+    description_en: "Stand down or lie down."
+    description_zh: "趴下或卧倒。"
+
+  recovery_stand:
+    official_name: "RecoveryStand"
+    sdk_method: "RecoveryStand"
+    sdk_api_id: 1006
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["recovery stand", "recover stand", "recover standing"]
+      zh: ["恢复站立", "恢复起立"]
+    description_en: "Recover to standing posture."
+    description_zh: "恢复站立姿态。"
+    reason: "Recovery can help restore posture but still needs operator supervision on a real robot."
+
+  sit_down:
+    official_name: "Sit"
+    sdk_method: "Sit"
+    sdk_api_id: 1009
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["sit", "sit down"]
+      zh: ["坐下", "坐好"]
+    description_en: "Sit down."
+    description_zh: "坐下。"
+
+  rise_sit:
+    official_name: "RiseSit"
+    sdk_method: "RiseSit"
+    sdk_api_id: 1010
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["rise sit", "stand from sit"]
+      zh: ["从坐姿站起", "坐姿起立"]
+    description_en: "Rise from sitting posture."
+    description_zh: "从坐姿起立。"
+
+  move:
+    official_name: "Move"
+    sdk_method: "Move"
+    sdk_api_id: 1008
+    official_supported: true
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_standing: true
+    aliases:
+      en: ["generic move"]
+      zh: ["通用移动"]
+    description_en: "Raw Move(vx, vy, vyaw) is not exposed directly to voice."
+    description_zh: "原始 Move(vx, vy, vyaw) 不直接开放给语音。"
+    reason: "Voice uses bounded directional Move derivatives with speed and duration limits."
+
+  move_forward:
+    official_name: "Move"
+    sdk_method: "Move"
+    sdk_api_id: 1008
+    official_supported: true
+    derived_from: "move"
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    requires_standing: true
+    requires_duration: true
+    default_duration_sec: 1.0
+    max_duration_sec: 2.0
+    default_speed: 0.25
+    max_speed: 0.3
+    aliases:
+      en: ["move forward", "go forward", "walk forward", "forward"]
+      zh: ["向前走", "前进", "往前走"]
+    description_en: "Move forward slowly for a bounded duration."
+    description_zh: "低速、限时向前移动。"
+    reason: "Move is only exposed through low-speed bounded commands."
+
+  move_backward:
+    official_name: "Move"
+    sdk_method: "Move"
+    sdk_api_id: 1008
+    official_supported: true
+    derived_from: "move"
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    requires_standing: true
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 2.0
+    default_speed: 0.2
+    max_speed: 0.25
+    aliases:
+      en: ["move back", "move backward", "go backward", "backward"]
+      zh: ["后退", "往后退", "向后退"]
+    description_en: "Move backward slowly for a bounded duration."
+    description_zh: "低速、限时后退。"
+
+  turn_left:
+    official_name: "Move"
+    sdk_method: "Move"
+    sdk_api_id: 1008
+    official_supported: true
+    derived_from: "move"
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    requires_standing: true
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 1.0
+    default_speed: 0.45
+    max_speed: 0.5
+    aliases:
+      en: ["turn left", "left"]
+      zh: ["左转", "向左转"]
+    description_en: "Turn left slowly for a bounded duration."
+    description_zh: "低速、限时左转。"
+
+  turn_right:
+    official_name: "Move"
+    sdk_method: "Move"
+    sdk_api_id: 1008
+    official_supported: true
+    derived_from: "move"
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    requires_standing: true
+    requires_duration: true
+    default_duration_sec: 0.7
+    max_duration_sec: 1.0
+    default_speed: 0.45
+    max_speed: 0.5
+    aliases:
+      en: ["turn right", "right"]
+      zh: ["右转", "向右转"]
+    description_en: "Turn right slowly for a bounded duration."
+    description_zh: "低速、限时右转。"
+
+  status_report:
+    official_name: "SportModeState"
+    sdk_method: ""
+    official_supported: false
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["report status", "status", "battery"]
+      zh: ["报告状态", "状态", "电量"]
+    description_en: "Read current robot status."
+    description_zh: "读取当前机器人状态。"
+
+  speed_level:
+    official_name: "SpeedLevel"
+    sdk_method: "SpeedLevel"
+    sdk_api_id: 1015
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [1]
+    aliases:
+      en: ["speed level", "change speed"]
+      zh: ["速度等级", "调整速度"]
+    description_en: "Change sport speed level."
+    description_zh: "调整运动速度等级。"
+    reason: "Voice must not freely increase speed level."
+
+  euler:
+    official_name: "Euler"
+    sdk_method: "Euler"
+    sdk_api_id: 1007
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [0.0, 0.0, 0.0]
+    aliases:
+      en: ["euler", "change attitude", "adjust attitude"]
+      zh: ["姿态调整", "欧拉角"]
+    description_en: "Adjust body attitude."
+    description_zh: "调整机身姿态。"
+    reason: "Attitude control needs explicit parameters and environment checks."
+
+  hello:
+    official_name: "Hello"
+    sdk_method: "Hello"
+    sdk_api_id: 1016
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["hello", "say hello", "wave"]
+      zh: ["打招呼", "招手", "你好"]
+    description_en: "Play the hello motion."
+    description_zh: "执行打招呼动作。"
+
+  stretch:
+    official_name: "Stretch"
+    sdk_method: "Stretch"
+    sdk_api_id: 1017
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["stretch", "stretch body"]
+      zh: ["伸展", "伸个懒腰"]
+    description_en: "Play the stretch motion."
+    description_zh: "执行伸展动作。"
+
+  content:
+    official_name: "Content"
+    sdk_method: "Content"
+    sdk_api_id: 1020
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["content motion"]
+      zh: ["开心动作"]
+    description_en: "Official Content preset motion."
+    description_zh: "官方 Content 预设动作。"
+    reason: "Meaning is not obvious enough for direct voice by default."
+
+  heart:
+    official_name: "Heart"
+    sdk_method: "Heart"
+    sdk_api_id: 1036
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["heart", "make a heart"]
+      zh: ["比心", "爱心"]
+    description_en: "Play the heart preset motion."
+    description_zh: "执行比心动作。"
+
+  static_walk:
+    official_name: "StaticWalk"
+    sdk_method: "StaticWalk"
+    sdk_api_id: 1061
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["static walk"]
+      zh: ["静态步态", "静态走"]
+    description_en: "Use static walk mode."
+    description_zh: "使用静态步态。"
+
+  free_avoid:
+    official_name: "FreeAvoid"
+    sdk_method: "FreeAvoid"
+    sdk_api_id: 2048
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: true
+    sdk_args: [true]
+    aliases:
+      en: ["free avoid", "enable free avoid"]
+      zh: ["开启避障", "自由避障"]
+    description_en: "Enable free avoid mode."
+    description_zh: "开启自由避障模式。"
+    reason: "Mode switches are visible in GUI but not direct voice by default."
+
+  switch_avoid_mode:
+    official_name: "SwitchAvoidMode"
+    sdk_method: "SwitchAvoidMode"
+    sdk_api_id: 2058
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["switch avoid mode", "toggle avoid mode"]
+      zh: ["切换避障模式", "切换避障"]
+    description_en: "Switch obstacle avoidance mode."
+    description_zh: "切换避障模式。"
+
+  auto_recovery_get:
+    official_name: "AutoRecoveryGet"
+    sdk_method: "AutoRecoveryGet"
+    sdk_api_id: 2055
+    official_supported: true
+    risk_level: "safe"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: true
+    aliases:
+      en: ["get auto recovery", "auto recovery status"]
+      zh: ["查询自动恢复", "自动恢复状态"]
+    description_en: "Read auto-recovery setting."
+    description_zh: "查询自动恢复设置。"
+
+  dance1:
+    official_name: "Dance1"
+    sdk_method: "Dance1"
+    sdk_api_id: 1022
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["dance", "dance one", "dance 1"]
+      zh: ["跳舞", "舞蹈一", "跳第一个舞"]
+    description_en: "Official dance preset 1."
+    description_zh: "官方舞蹈预设 1。"
+    reason: "Preset motion may need open space; real robot disabled by default."
+
+  dance2:
+    official_name: "Dance2"
+    sdk_method: "Dance2"
+    sdk_api_id: 1023
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["dance two", "dance 2", "second dance"]
+      zh: ["舞蹈二", "跳第二个舞"]
+    description_en: "Official dance preset 2."
+    description_zh: "官方舞蹈预设 2。"
+    reason: "Preset motion may need open space; real robot disabled by default."
+
+  pose:
+    official_name: "Pose"
+    sdk_method: "Pose"
+    sdk_api_id: 1028
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [true]
+    aliases:
+      en: ["pose", "strike a pose"]
+      zh: ["摆姿势", "姿势"]
+    description_en: "Enable pose preset."
+    description_zh: "执行姿势预设。"
+
+  free_walk:
+    official_name: "FreeWalk"
+    sdk_method: "FreeWalk"
+    sdk_api_id: 2045
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["free walk"]
+      zh: ["自由走", "自由步态"]
+    description_en: "Free walk mode."
+    description_zh: "自由步态。"
+    reason: "Walking mode changes need operator supervision before real-robot enablement."
+
+  classic_walk:
+    official_name: "ClassicWalk"
+    sdk_method: "ClassicWalk"
+    sdk_api_id: 2049
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: true
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [true]
+    aliases:
+      en: ["classic walk"]
+      zh: ["经典步态", "经典走"]
+    description_en: "Classic walk mode."
+    description_zh: "经典步态。"
+
+  auto_recovery_set:
+    official_name: "AutoRecoverySet"
+    sdk_method: "AutoRecoverySet"
+    sdk_api_id: 2054
+    official_supported: true
+    risk_level: "caution"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [true]
+    aliases:
+      en: ["set auto recovery", "enable auto recovery"]
+      zh: ["设置自动恢复", "开启自动恢复"]
+    description_en: "Set auto-recovery option."
+    description_zh: "设置自动恢复选项。"
+
+  damp:
+    official_name: "Damp"
+    sdk_method: "Damp"
+    sdk_api_id: 1001
+    official_supported: true
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["damp"]
+      zh: ["阻尼"]
+    description_en: "Damp mode is not opened to voice control."
+    description_zh: "阻尼模式暂不开放给语音控制。"
+    reason: "Mode semantics and physical behavior need a separate operator workflow."
+
+  trajectory_follow:
+    official_name: "TrajectoryFollow"
+    sdk_method: "TrajectoryFollow"
+    official_supported: true
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["trajectory follow", "follow trajectory"]
+      zh: ["轨迹跟踪", "跟随轨迹"]
+    description_en: "Trajectory following is disabled until path and environment checks exist."
+    description_zh: "轨迹跟踪需路径和环境检查，本次禁用。"
+    reason: "Requires validated trajectory input, not a single voice phrase."
+
+  switch_joystick:
+    official_name: "SwitchJoystick"
+    sdk_method: "SwitchJoystick"
+    sdk_api_id: 1027
+    official_supported: true
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    sdk_args: [true]
+    aliases:
+      en: ["switch joystick", "toggle joystick"]
+      zh: ["切换手柄", "切换摇杆"]
+    description_en: "Switch joystick control."
+    description_zh: "切换手柄控制权。"
+    reason: "Control authority switches are not voice-enabled."
+
+  economic_gait:
+    official_name: "EconomicGait"
+    sdk_method: "EconomicGait"
+    sdk_api_id: 1063
+    official_supported: true
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    aliases:
+      en: ["economic gait"]
+      zh: ["经济步态"]
+    description_en: "Registered by SDK but no SportClient wrapper was found during scan."
+    description_zh: "SDK 注册了该 API，但扫描未发现 SportClient 包装方法。"
+    reason: "Disabled until local SDK method availability is confirmed."
+
+  low_level_motor_control:
+    official_name: "Low-level motor control"
+    sdk_method: ""
+    official_supported: false
+    risk_level: "disabled"
+    voice_enabled: false
+    mock_enabled: false
+    real_robot_enabled: false
+    aliases:
+      en: ["low level control", "motor control"]
+      zh: ["低层控制", "电机控制"]
+    description_en: "Low-level motor control is outside this project scope."
+    description_zh: "低层电机控制不在本项目范围内。"
+    reason: "Official README warns low-level control conflicts with high-level sport service."
+
+  front_flip:
+    official_name: "FrontFlip"
+    sdk_method: "FrontFlip"
+    sdk_api_id: 1030
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["front flip", "flip forward", "forward flip"]
+      zh: ["前空翻", "向前翻", "前翻"]
+    description_en: "Dangerous flip action; real robot disabled."
+    description_zh: "危险翻转动作，默认禁止真机执行。"
+    reason: "Flip motion may cause falls, collisions, or hardware damage."
+
+  back_flip:
+    official_name: "BackFlip"
+    sdk_method: "BackFlip"
+    sdk_api_id: 2043
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["back flip", "backflip", "flip backward"]
+      zh: ["后空翻", "向后翻", "后翻"]
+    description_en: "Dangerous back flip action; real robot disabled."
+    description_zh: "危险后空翻动作，默认禁止真机执行。"
+
+  left_flip:
+    official_name: "LeftFlip"
+    sdk_method: "LeftFlip"
+    sdk_api_id: 2041
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["left flip", "flip left"]
+      zh: ["左翻", "向左翻"]
+    description_en: "Dangerous left flip action; real robot disabled."
+    description_zh: "危险左翻动作，默认禁止真机执行。"
+
+  front_jump:
+    official_name: "FrontJump"
+    sdk_method: "FrontJump"
+    sdk_api_id: 1031
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["jump", "front jump", "jump forward"]
+      zh: ["跳", "跳跃", "向前跳"]
+    description_en: "Dangerous jump action; real robot disabled."
+    description_zh: "危险跳跃动作，默认禁止真机执行。"
+
+  front_pounce:
+    official_name: "FrontPounce"
+    sdk_method: "FrontPounce"
+    sdk_api_id: 1032
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["pounce", "front pounce", "pounce forward"]
+      zh: ["扑", "扑击", "向前扑"]
+    description_en: "Dangerous pounce action; real robot disabled."
+    description_zh: "危险扑击动作，默认禁止真机执行。"
+
+  hand_stand:
+    official_name: "HandStand"
+    sdk_method: "HandStand"
+    sdk_api_id: 2044
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    sdk_args: [true]
+    aliases:
+      en: ["handstand", "hand stand"]
+      zh: ["倒立"]
+    description_en: "Dangerous handstand action; real robot disabled."
+    description_zh: "危险倒立动作，默认禁止真机执行。"
+
+  free_bound:
+    official_name: "FreeBound"
+    sdk_method: "FreeBound"
+    sdk_api_id: 2046
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    sdk_args: [true]
+    aliases:
+      en: ["free bound", "bound"]
+      zh: ["自由跳跃步态", "弹跳步态"]
+    description_en: "Dangerous bound gait; real robot disabled."
+    description_zh: "危险弹跳步态，默认禁止真机执行。"
+
+  free_jump:
+    official_name: "FreeJump"
+    sdk_method: "FreeJump"
+    sdk_api_id: 2047
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    sdk_args: [true]
+    aliases:
+      en: ["free jump"]
+      zh: ["自由跳"]
+    description_en: "Dangerous free jump mode; real robot disabled."
+    description_zh: "危险自由跳模式，默认禁止真机执行。"
+
+  trot_run:
+    official_name: "TrotRun"
+    sdk_method: "TrotRun"
+    sdk_api_id: 1062
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["trot run", "run fast", "sprint"]
+      zh: ["快跑", "高速跑", "小跑"]
+    description_en: "High-speed running action; real robot disabled."
+    description_zh: "高速跑动动作，默认禁止真机执行。"
+
+  scrape:
+    official_name: "Scrape"
+    sdk_method: "Scrape"
+    sdk_api_id: 1029
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    aliases:
+      en: ["scrape"]
+      zh: ["刮擦", "scrape"]
+    description_en: "Official Scrape motion; treated as dangerous until behavior is confirmed."
+    description_zh: "官方 Scrape 动作，含义未确认前按危险动作处理。"
+
+  walk_upright:
+    official_name: "WalkUpright"
+    sdk_method: "WalkUpright"
+    sdk_api_id: 2050
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    sdk_args: [true]
+    aliases:
+      en: ["walk upright", "upright walk"]
+      zh: ["直立行走", "直立走"]
+    description_en: "Upright walk is disabled for real robot."
+    description_zh: "直立行走默认禁止真机执行。"
+
+  cross_step:
+    official_name: "CrossStep"
+    sdk_method: "CrossStep"
+    sdk_api_id: 2051
+    official_supported: true
+    risk_level: "dangerous"
+    voice_enabled: false
+    mock_enabled: true
+    real_robot_enabled: false
+    requires_manual_confirm: true
+    sdk_args: [true]
+    aliases:
+      en: ["cross step"]
+      zh: ["交叉步"]
+    description_en: "Cross-step gait is disabled for real robot."
+    description_zh: "交叉步默认禁止真机执行。"

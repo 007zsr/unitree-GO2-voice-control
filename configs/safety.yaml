@@ -1,0 +1,13 @@
+min_semantic_confidence: 0.65
+reject_need_clarification: true
+reject_dangerous_semantics: true
+reject_fast_speed_request: true
+allowed_speed_levels: [slow]
+max_continuous_motion_sec: 5.0
+require_connected_for_motion: true
+allow_status_without_connection: true
+allow_caution_actions_on_real_robot: false
+allow_dangerous_actions_on_real_robot: false
+allow_voice_trigger_dangerous_actions: false
+stop_phrases: [停, 停下, 别动, 立刻停, 停止, stop]
+dangerous_keywords: [攻击, 撞, 撞击, 冲过去, 扑, 扑击, 咬, 跳, 后空翻, 翻跟头, 快跑, 高速]
