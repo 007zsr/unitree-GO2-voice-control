@@ -5,7 +5,7 @@ import threading
 import time
 import tkinter as tk
 from pathlib import Path
-from tkinter import messagebox, ttk
+from tkinter import messagebox, simpledialog, ttk
 
 from src.gui.gui_runtime_bridge import GuiRuntimeBridge
 from src.gui.i18n import I18n
@@ -15,9 +15,13 @@ from src.models import PipelineDebugResult
 
 
 class Go2VoiceControlWindow(tk.Tk):
-    def __init__(self, config_dir: str | Path | None = None):
+    def __init__(
+        self,
+        config_dir: str | Path | None = None,
+        runtime_overrides: dict[str, object] | None = None,
+    ):
         super().__init__()
-        self.bridge = GuiRuntimeBridge(config_dir)
+        self.bridge = GuiRuntimeBridge(config_dir, runtime_overrides=runtime_overrides)
         self.i18n = I18n(str(self.bridge.get_settings().get("ui_language", "en")))
         self.title(self.i18n.t("app.title"))
         self.geometry("1180x880")
@@ -47,6 +51,7 @@ class Go2VoiceControlWindow(tk.Tk):
         if "clam" in style.theme_names():
             style.theme_use("clam")
         style.configure("Warning.TLabel", foreground="#b00020", font=("TkDefaultFont", 10, "bold"))
+        style.configure("RealMode.TLabel", foreground="#b00020", font=("TkDefaultFont", 11, "bold"))
         style.configure("Status.TLabel", font=("TkDefaultFont", 10, "bold"))
 
     def _build_layout(self) -> None:
@@ -99,7 +104,13 @@ class Go2VoiceControlWindow(tk.Tk):
         self.command_filter_combo.grid(row=0, column=8, padx=(6, 0))
         self.command_filter_combo.bind("<<ComboboxSelected>>", lambda _event: self._refresh_command_list())
 
-        self.warning_label = ttk.Label(self, text="", style="Warning.TLabel", padding=(8, 0, 8, 8))
+        self.warning_label = ttk.Label(
+            self,
+            text="",
+            style="Warning.TLabel",
+            padding=(8, 0, 8, 8),
+            wraplength=1120,
+        )
         self.warning_label.grid(row=2, column=0, sticky="ew")
 
         self.log_paths_label = ttk.Label(self, textvariable=self.log_paths_state, padding=(8, 0, 8, 8))
@@ -170,6 +181,13 @@ class Go2VoiceControlWindow(tk.Tk):
             status = self.bridge.get_current_status()
             self._log(f"Qwen mode: {status.get('qwen_mode', 'rule_based')}")
             self._log(f"Qwen model dir: {status.get('qwen_model_dir', 'models/qwen')}")
+            self._log(
+                "Semantic engine: "
+                f"{status.get('semantic_engine_mode', 'traditional')}, "
+                f"LLM enabled={status.get('llm_enabled', False)}, "
+                f"provider={status.get('llm_provider', 'disabled')}, "
+                f"available={status.get('llm_available', False)}"
+            )
             self._log(f"Portable status: {status.get('portable_status', 'WARN')}")
             self._log("Model cache note: the program never deletes source cache files.")
             self._log_current_paths()
@@ -186,13 +204,30 @@ class Go2VoiceControlWindow(tk.Tk):
         real_robot = bool(status.get("enable_real_robot"))
         adapter = status.get("adapter", "unknown")
         if robot_mode == "go2" and real_robot:
-            mode_text = f"Mode: Go2 real robot ({adapter})"
-            self.warning_label.configure(text="WARNING: real Go2 mode may control the physical robot.")
+            real_demo = status.get("real_demo", {})
+            allowed = []
+            interface = str(status.get("interface") or "")
+            if isinstance(real_demo, dict):
+                allowed = [str(item) for item in real_demo.get("allowed_real_actions", [])]
+                interface = str(real_demo.get("interface") or interface)
+            mode_text = f"REAL GO2 MODE ENABLED | Adapter: {adapter} | Interface: {interface}"
+            self.warning_label.configure(
+                text=(
+                    "REAL GO2 MODE ENABLED | "
+                    f"Adapter: {adapter} | Interface: {interface} | "
+                    f"Allowed actions: {', '.join(allowed) or '-'} | "
+                    "Dangerous actions: disabled"
+                )
+            )
         else:
-            mode_text = f"Mode: Mock, no real Go2 control ({adapter})"
-            self.warning_label.configure(text="")
+            mode_text = f"MOCK MODE | Adapter: {adapter} | No real robot will move"
+            self.warning_label.configure(text="MOCK MODE | No real robot will move")
         self.mode_state.set(mode_text)
-        self.semantic_state.set(f"NLU: {status.get('qwen_provider', 'unknown')}")
+        llm_note = "available" if status.get("llm_available") else "unavailable"
+        self.semantic_state.set(
+            f"NLU: {status.get('semantic_engine_mode', 'traditional')} | "
+            f"{status.get('llm_provider', 'disabled')} {llm_note}"
+        )
         self.asr_state.set(f"ASR: {status.get('asr_provider', 'unknown')}")
         self._apply_audio_status(status.get("audio", {}))
         self._apply_asr_status(status.get("asr", {}))
@@ -214,6 +249,9 @@ class Go2VoiceControlWindow(tk.Tk):
                     f"UI: {settings.get('ui_language')}",
                     f"Recognition: {settings.get('recognition_preference')}",
                     f"Command mode: {settings.get('command_detection_mode')}",
+                    f"Semantic: {settings.get('semantic_engine_mode')}, "
+                    f"LLM {'on' if settings.get('llm_enabled') else 'off'} "
+                    f"({settings.get('llm_provider')})",
                     f"Dedup: {'on' if settings.get('deduplicate_enabled') else 'off'}, "
                     f"{settings.get('deduplicate_window_sec')}s",
                 ]
@@ -282,6 +320,19 @@ class Go2VoiceControlWindow(tk.Tk):
 
     def _start_listening(self) -> None:
         self._log("Button: start listening")
+        if self._requires_real_continuous_confirmation():
+            token = str(self.bridge.real_demo_settings().get("continuous_confirm_token") or "ENABLE_REAL_CONTINUOUS")
+            answer = simpledialog.askstring(
+                "Real Go2 continuous listening",
+                (
+                    "Continuous listening in real robot mode may trigger repeated commands.\n"
+                    f"Type {token} to continue."
+                ),
+                parent=self,
+            )
+            if answer != token:
+                self._log("Continuous listening not started: real mode confirmation missing")
+                return
         started = self.bridge.start_continuous_listening(
             on_result=lambda result: self.ui_queue.put(("result", result)),
             on_event=lambda event: self.ui_queue.put(("event", event)),
@@ -307,7 +358,13 @@ class Go2VoiceControlWindow(tk.Tk):
 
     def _open_settings(self) -> None:
         self._log("Button: settings")
-        SettingsWindow(self, self.bridge.get_settings(), self.i18n, self._save_settings)
+        SettingsWindow(
+            self,
+            self.bridge.get_settings(),
+            self.i18n,
+            self._save_settings,
+            self.bridge.check_qwen_model_status,
+        )
 
     def _save_settings(self, settings: dict[str, object]) -> None:
         self.bridge.save_user_settings(settings)
@@ -315,6 +372,14 @@ class Go2VoiceControlWindow(tk.Tk):
         self._apply_i18n()
         self._refresh_status()
         self._log("Settings saved")
+        status = self.bridge.get_current_status()
+        self._log(
+            "Semantic settings: "
+            f"{status.get('semantic_engine_mode')}, "
+            f"LLM enabled={status.get('llm_enabled')}, "
+            f"provider={status.get('llm_provider')}, "
+            f"available={status.get('llm_available')}"
+        )
 
     def _refresh_command_list(self) -> None:
         language = self.i18n.language
@@ -362,11 +427,16 @@ class Go2VoiceControlWindow(tk.Tk):
         self.plan_panel.set_json(result.command_plan)
         self.command_panel.set_json(result.robot_command)
         self.safety_panel.set_json(result.safety_decision)
+        llm_summary = self._llm_summary(result.semantic_result)
         execution = {
             "accepted": result.accepted,
             "stage": result.stage,
             "message": result.message,
             "result_type": self._result_type(result),
+            "llm": llm_summary,
+            "adapter": self.bridge.get_current_status().get("adapter"),
+            "sdk_method": self._sdk_method(result.adapter_result),
+            "sdk_return": self._sdk_return(result.adapter_result),
             "queue_result": result.queue_result,
             "adapter_result": result.adapter_result,
             "error_stage": result.error_stage,
@@ -375,6 +445,13 @@ class Go2VoiceControlWindow(tk.Tk):
         self.execution_panel.set_json(execution)
         self.debug_panel.set_json(result.to_dict())
         semantic = result.semantic_result or {}
+        if llm_summary.get("fallback_triggered"):
+            self._log(
+                f"{result.command_id}: LLM fallback via {llm_summary.get('llm_provider')} "
+                f"-> {llm_summary.get('llm_parsed_intent')} "
+                f"({llm_summary.get('llm_confidence')}); "
+                f"source={llm_summary.get('final_semantic_source')}"
+            )
         if result.stage == "deduplicate":
             self._log(f"{result.command_id}: skipped duplicate command")
         elif result.stage == "confirmation":
@@ -397,6 +474,39 @@ class Go2VoiceControlWindow(tk.Tk):
             self._log(f"{result.command_id}: rejected at {result.stage}: {result.message}")
         self._refresh_status()
 
+    def _requires_real_continuous_confirmation(self) -> bool:
+        status = self.bridge.get_current_status()
+        real_demo = self.bridge.real_demo_settings()
+        return (
+            str(status.get("robot_mode")) == "go2"
+            and bool(status.get("enable_real_robot"))
+            and bool(real_demo.get("continuous_requires_confirmation", True))
+        )
+
+    def _sdk_method(self, adapter_result: object) -> str:
+        raw = adapter_result.get("raw_response") if isinstance(adapter_result, dict) else None
+        if isinstance(raw, dict) and raw.get("sdk_method"):
+            return str(raw.get("sdk_method"))
+        if isinstance(adapter_result, dict) and isinstance(adapter_result.get("plan_results"), list):
+            for item in adapter_result.get("plan_results") or []:
+                result = item.get("adapter_result") if isinstance(item, dict) else None
+                method = self._sdk_method(result)
+                if method:
+                    return method
+        return ""
+
+    def _sdk_return(self, adapter_result: object) -> object:
+        raw = adapter_result.get("raw_response") if isinstance(adapter_result, dict) else None
+        if isinstance(raw, dict) and "code" in raw:
+            return raw.get("code")
+        if isinstance(adapter_result, dict) and isinstance(adapter_result.get("plan_results"), list):
+            for item in adapter_result.get("plan_results") or []:
+                result = item.get("adapter_result") if isinstance(item, dict) else None
+                value = self._sdk_return(result)
+                if value != "":
+                    return value
+        return ""
+
     def _result_type(self, result: PipelineDebugResult) -> str:
         if result.accepted:
             return "accepted"
@@ -404,6 +514,8 @@ class Go2VoiceControlWindow(tk.Tk):
             return "safety_rejected"
         if result.stage == "confirmation":
             return "needs_confirmation"
+        if result.stage == "semantic_debug":
+            return "semantic_debug"
         if result.semantic_result and result.semantic_result.get("is_command") is False:
             reason = str(result.semantic_result.get("reason") or "")
             if "ambiguous_" in reason:
@@ -414,6 +526,35 @@ class Go2VoiceControlWindow(tk.Tk):
         if result.error_stage:
             return "system_error"
         return "rejected"
+
+    def _llm_summary(self, semantic: object) -> dict[str, object]:
+        if not isinstance(semantic, dict):
+            return {
+                "fallback_triggered": False,
+                "fallback_reason": "",
+                "llm_provider": "",
+                "llm_parsed_intent": "",
+                "llm_confidence": None,
+                "llm_risk": "",
+                "final_semantic_source": "",
+            }
+        raw = semantic.get("raw_result")
+        if not isinstance(raw, dict):
+            return {"fallback_triggered": False}
+        keys = [
+            "fallback_triggered",
+            "fallback_reason",
+            "llm_provider",
+            "llm_available",
+            "llm_parsed_intent",
+            "llm_confidence",
+            "llm_needs_confirmation",
+            "llm_risk",
+            "llm_latency_ms",
+            "llm_error_type",
+            "final_semantic_source",
+        ]
+        return {key: raw.get(key) for key in keys if key in raw}
 
     def _log_audio_dependency_hint(self, result: PipelineDebugResult) -> None:
         self._log("Audio capture dependency missing.")

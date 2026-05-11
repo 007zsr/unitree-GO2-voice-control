@@ -555,6 +555,7 @@ class PipelineLogger:
             )
         if result.semantic_result:
             semantic = result.semantic_result
+            llm_extra = self._llm_fields_from_semantic(semantic)
             records.append(
                 PipelineLogRecord(
                     session_id=self.session_id,
@@ -567,6 +568,7 @@ class PipelineLogger:
                     message=str(semantic.get("reason") or ""),
                     transcript_text=result.transcript_text,
                     semantic_result=semantic,
+                    extra=llm_extra,
                 )
             )
         if result.command_plan:
@@ -737,6 +739,7 @@ class PipelineLogger:
         return stage not in {
             "asr",
             "semantic",
+            "semantic_debug",
             "confirmation",
             "safety",
             "deduplicate",
@@ -744,6 +747,30 @@ class PipelineLogger:
             "asr_dependency",
             "audio_busy",
         }
+
+    def _llm_fields_from_semantic(self, semantic: dict[str, Any]) -> dict[str, Any]:
+        raw = semantic.get("raw_result")
+        if not isinstance(raw, dict):
+            return {}
+        keys = [
+            "semantic_engine_mode",
+            "llm_enabled",
+            "llm_provider",
+            "llm_model_dir",
+            "llm_available",
+            "fallback_triggered",
+            "fallback_reason",
+            "llm_input_text",
+            "llm_raw_output",
+            "llm_parsed_intent",
+            "llm_confidence",
+            "llm_needs_confirmation",
+            "llm_risk",
+            "llm_latency_ms",
+            "llm_error_type",
+            "final_semantic_source",
+        ]
+        return {key: raw.get(key) for key in keys if key in raw}
 
     def _write_index(self, record: dict[str, Any]) -> None:
         self._append_jsonl(self.paths.index / "log_index.jsonl", record)

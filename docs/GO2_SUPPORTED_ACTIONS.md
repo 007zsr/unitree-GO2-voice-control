@@ -175,8 +175,8 @@ Official SDK support does not mean real-robot execution is enabled. Safety remai
 
 - Official SDK method: `StopMove`
 - Risk level: `safe`
-- English aliases: stop, stop moving, halt, freeze, emergency stop
-- Chinese aliases: 停止, 停下, 别动, 立刻停止, 急停
+- English aliases: stop, stop moving, halt, freeze, emergency stop, do not move, don't move, hold still, stay still, stay there, stand still
+- Chinese aliases: 停止, 停下, 别动, 立刻停止, 急停, 不要动, 原地待命, 原地别动, 保持不动, 停在原地, 别移动
 - Mock enabled: `True`
 - Real robot enabled: `True`
 - Requires standing: `False`

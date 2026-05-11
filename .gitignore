@@ -18,6 +18,7 @@ env/
 runtime_data/**
 !runtime_data/
 !runtime_data/logs/
+!runtime_data/tmp/
 !runtime_data/logs/gui_sessions/
 !runtime_data/logs/one_shot/
 !runtime_data/logs/continuous/
@@ -43,6 +44,8 @@ temp_audio/
 Thumbs.db
 .vscode/
 .idea/
+.agents/
+.codex/
 
 # Audit / temporary reports
 project_audit/
@@ -75,3 +78,6 @@ models/qwen/**/*.gguf
 
 # Package cache
 wheelhouse/
+
+# External SDK/source checkouts
+third_party/

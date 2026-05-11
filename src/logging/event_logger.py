@@ -63,7 +63,7 @@ class EventLogger:
         if isinstance(value, dict):
             redacted = {}
             for key, item in value.items():
-                if any(token in str(key).lower() for token in ["key", "token", "secret"]):
+                if any(token in str(key).lower() for token in ["key", "token", "secret", "password"]):
                     redacted[key] = "***"
                 elif str(key) == "raw_result":
                     redacted[key] = "<omitted>"

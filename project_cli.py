@@ -20,9 +20,11 @@ SCRIPT_COMMANDS: dict[str, Path] = {
     "record-test": Path("scripts/test_tools/test_record_audio.py"),
     "whisper-test": Path("scripts/test_tools/test_whisper_file.py"),
     "go2-check": Path("scripts/check/check_go2_connection.py"),
+    "go2-readonly-check": Path("scripts/check/check_go2_readonly_connection.py"),
     "logs": Path("scripts/check/show_recent_logs.py"),
     "scan-go2-actions": Path("scripts/check/scan_go2_sport_actions.py"),
     "fuzzy-text-test": Path("scripts/test_tools/run_fuzzy_text_batch.py"),
+    "real-action-test": Path("scripts/test_tools/run_real_action_test.py"),
 }
 
 
@@ -172,10 +174,12 @@ def usage() -> None:
         "whisper-test",
         "collect-models",
         "go2-check",
+        "go2-readonly-check",
         "audit",
         "logs",
         "scan-go2-actions",
         "fuzzy-text-test",
+        "real-action-test",
     ]
     print("Usage: python project_cli.py <command> [args...]")
     print("Commands:")
@@ -201,6 +205,9 @@ def main(argv: list[str] | None = None) -> int:
         return command_audit(extra_args)
     if command == "go2-check":
         print("Go2 check is connection/status oriented. It does not issue motion commands by default.", flush=True)
+        if "--readonly" in extra_args:
+            readonly_args = [arg for arg in extra_args if arg != "--readonly"]
+            return _run_script(SCRIPT_COMMANDS["go2-readonly-check"], readonly_args)
         return _run_script(SCRIPT_COMMANDS[command], extra_args)
     if command == "whisper-test" and not extra_args:
         default_audio = PROJECT_ROOT / "runtime_data" / "debug_audio" / "last_record.wav"

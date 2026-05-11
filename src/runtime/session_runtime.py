@@ -23,10 +23,15 @@ from src.models import (
     new_plan_id,
 )
 from src.nlu.asr_text_normalizer import AsrTextNormalizer, AsrTextNormalization
+from src.nlu.llm_fallback_decider import LLMFallbackDecider
+from src.nlu.llm_output_parser import LLMOutputParser
+from src.nlu.llm_provider_factory import build_llm_provider
+from src.nlu.llm_provider_base import LLMProviderContext
 from src.nlu.fuzzy_command_resolver import FuzzyCommandResolver
 from src.nlu.non_command_filter import NonCommandFilter
 from src.nlu.qwen_engine import QwenEngine
 from src.nlu.sequence_command_parser import SequenceCommandParser
+from src.nlu.semantic_engine_config import semantic_engine_config
 from src.robot.go2_adapter import Go2Adapter
 from src.robot.mock_adapter import MockAdapter
 from src.runtime.command_queue import CommandQueue
@@ -40,11 +45,17 @@ class SessionRuntime:
         self.action_catalog = Go2ActionCatalog(configs.go2_actions)
         self.catalog = CommandCatalog(configs.commands, configs.go2_actions)
         self.normalizer = CommandNormalizer(self.catalog)
+        self.semantic_engine_config = semantic_engine_config(configs.app, configs.models)
         qwen_config = dict(configs.models.get("qwen", {}))
+        qwen_config["provider"] = "rule_based"
+        qwen_config["mode"] = "rule_based"
         qwen_config["command_detection"] = configs.app.get("command_detection", {})
         qwen_config["recognition"] = configs.app.get("recognition", {})
         qwen_config["go2_action_catalog"] = configs.go2_actions
         self.qwen = QwenEngine(qwen_config)
+        self.llm_provider = build_llm_provider(self.semantic_engine_config, configs.config_dir.parent)
+        self.llm_decider = LLMFallbackDecider(self.semantic_engine_config)
+        self.llm_output_parser = LLMOutputParser()
         asr_config = dict(configs.models.get("asr", {}))
         whisper_config = configs.models.get("whisper", {})
         if isinstance(whisper_config, dict):
@@ -131,12 +142,18 @@ class SessionRuntime:
         return self.queue.wait_until_idle(timeout_sec)
 
     def get_current_status(self) -> dict[str, object]:
+        llm_status = self.llm_provider.status()
         return {
             "robot_mode": self.configs.robot_mode,
             "enable_real_robot": self.configs.enable_real_robot,
             "adapter": self.adapter.__class__.__name__,
             "asr_provider": self.configs.models.get("asr", {}).get("provider", "whisper"),
             "qwen_provider": self.configs.models.get("qwen", {}).get("provider", "rule_based"),
+            "semantic_engine_mode": self.semantic_engine_config.get("mode", "traditional"),
+            "llm_enabled": self.semantic_engine_config.get("llm_enabled", False),
+            "llm_provider": self.semantic_engine_config.get("llm_provider", "disabled"),
+            "llm_available": bool(llm_status.get("available")),
+            "llm_model_status": llm_status,
             "queue_current": self.queue.current_command_id(),
             "queue_pending": self.queue.pending_count(),
         }
@@ -195,7 +212,26 @@ class SessionRuntime:
         cid = command_id or new_command_id()
         transcript = transcript or TranscriptResult(text=text, no_speech_prob=0.0)
         try:
-            semantic_items, parse_meta = self._parse_semantic_items(text)
+            if self._semantic_engine_mode() == "llm_only_debug":
+                semantic = self._parse_llm_debug_only(text, cid)
+                self.logger.log(
+                    "nlu",
+                    "llm_debug_only",
+                    command_id=cid,
+                    source_text=text,
+                    semantic=semantic.to_dict(),
+                    **self._llm_log_fields(semantic),
+                )
+                return CommandFlowResult(
+                    cid,
+                    False,
+                    "semantic_debug",
+                    "LLM debug mode: semantic result was not submitted to CommandPlan.",
+                    transcript=transcript,
+                    semantic=semantic,
+                    queue_status="not_submitted",
+                )
+            semantic_items, parse_meta = self._parse_semantic_items(text, cid)
             if not semantic_items:
                 semantic = parse_meta.get("semantic_result")
                 if not isinstance(semantic, SemanticResult):
@@ -206,6 +242,8 @@ class SessionRuntime:
                     command_id=cid,
                     source_text=text,
                     semantic=semantic.to_dict(),
+                    parse_meta=parse_meta,
+                    **self._llm_log_fields(semantic),
                 )
                 return CommandFlowResult(
                     cid,
@@ -227,6 +265,7 @@ class SessionRuntime:
                     for span, item in semantic_items
                 ],
                 parse_meta=parse_meta,
+                **self._llm_log_fields(semantic),
             )
             commands = self._normalize_plan_commands(semantic_items, text, cid)
             command = commands[0]
@@ -289,7 +328,7 @@ class SessionRuntime:
                 safety=SafetyDecision(False, "exception"),
             )
 
-    def _parse_semantic_items(self, text: str) -> tuple[list[tuple[str, SemanticResult]], dict[str, object]]:
+    def _parse_semantic_items(self, text: str, command_id: str = "") -> tuple[list[tuple[str, SemanticResult]], dict[str, object]]:
         plan_config = self.configs.app.get("command_plan", {})
         enabled = bool(plan_config.get("enabled", True))
         normalization = self.asr_text_normalizer.normalize(text, self._command_detection_mode())
@@ -302,6 +341,9 @@ class SessionRuntime:
                 "plan_type": "none",
                 "semantic_result": semantic,
                 "ambiguous_rejected": True,
+                "semantic_engine": self.semantic_engine_config,
+                "fallback_triggered": False,
+                "fallback_reason": "normalizer_rejected",
             }
         non_command = self.non_command_filter.classify(parse_text)
         if self._command_detection_mode() == "strict" and non_command.is_non_command:
@@ -312,32 +354,44 @@ class SessionRuntime:
                 "semantic_result": semantic,
                 "non_command_rejected": True,
                 "non_command_reason": non_command.reason,
+                "semantic_engine": self.semantic_engine_config,
+                "fallback_triggered": False,
+                "fallback_reason": "non_command_rejected",
             }
         if not enabled:
-            semantic = self._parse_single_span(parse_text, parse_text)
+            semantic = self._parse_single_span(parse_text, parse_text, command_id)
             self._apply_normalization_to_semantic(semantic, normalization)
             return ([(text, semantic)] if semantic.is_command else []), {"plan_type": "single", "enabled": False}
 
         split = self.sequence_parser.split(parse_text)
         spans = split.spans or [parse_text]
         items: list[tuple[str, SemanticResult]] = []
+        single_span_semantic: SemanticResult | None = None
         for span in spans:
-            semantic = self._parse_single_span(span, parse_text)
+            semantic = self._parse_single_span(span, parse_text, command_id)
+            if len(spans) == 1:
+                single_span_semantic = semantic
             self._apply_normalization_to_semantic(semantic, normalization)
             if semantic.is_command:
                 items.append((span, semantic))
         if not items and len(spans) != 1:
-            semantic = self._parse_single_span(parse_text, parse_text)
+            semantic = self._parse_single_span(parse_text, parse_text, command_id)
             self._apply_normalization_to_semantic(semantic, normalization)
             if semantic.is_command:
                 items.append((parse_text, semantic))
         if not items:
+            semantic = single_span_semantic
+            if semantic is None:
+                semantic = self._parse_single_span(parse_text, parse_text, command_id)
+                self._apply_normalization_to_semantic(semantic, normalization)
             return [], {
                 **base_meta,
                 "plan_type": "none",
                 "truncated": split.truncated,
                 "truncated_count": split.truncated_count,
                 "connectors_found": split.connectors_found,
+                "semantic_result": semantic,
+                **self._llm_meta_fields(semantic),
             }
 
         first_stop_index = next((index for index, (_, item) in enumerate(items) if item.intent == "stop"), None)
@@ -352,6 +406,12 @@ class SessionRuntime:
             "truncated_count": split.truncated_count + stop_trimmed_count,
             "connectors_found": split.connectors_found,
             "stop_trimmed_count": stop_trimmed_count,
+            "semantic_engine": self.semantic_engine_config,
+            "llm_items": [
+                self._llm_meta_fields(item)
+                for _, item in items
+                if item.raw_result.get("fallback_triggered") or item.raw_result.get("fallback_reason")
+            ],
         }
 
     def _semantic_from_normalization_rejection(self, normalization: AsrTextNormalization) -> SemanticResult:
@@ -402,12 +462,230 @@ class SessionRuntime:
             semantic.need_clarification = True
         semantic.reason = f"{semantic.reason}; ASR ambiguity: {', '.join(normalization.ambiguity_flags)}"
 
-    def _parse_single_span(self, span: str, full_text: str) -> SemanticResult:
+    def _parse_single_span(self, span: str, full_text: str, command_id: str = "") -> SemanticResult:
         fuzzy_source = full_text if self._looks_like_relative_fuzzy(full_text) else span
         fuzzy = self.fuzzy_resolver.resolve(fuzzy_source)
         if fuzzy is not None:
-            return fuzzy
-        return self.qwen.parse_command(span)
+            return self._maybe_apply_llm_fallback(span, full_text, fuzzy, command_id)
+        traditional = self.qwen.parse_command(span)
+        return self._maybe_apply_llm_fallback(span, full_text, traditional, command_id)
+
+    def _maybe_apply_llm_fallback(
+        self,
+        span: str,
+        full_text: str,
+        traditional: SemanticResult,
+        command_id: str = "",
+    ) -> SemanticResult:
+        decision = self.llm_decider.decide(span, traditional)
+        self._annotate_fallback_decision(traditional, decision.should_call, decision.reason)
+        if not decision.should_call:
+            return traditional
+
+        context = LLMProviderContext(
+            normalized_text=span,
+            asr_language=traditional.source_language,
+            rule_nlu_result=traditional,
+            allowed_intents=self._allowed_llm_intents(),
+            action_catalog_summary=self._action_catalog_summary(),
+            safety_policy_summary=self._safety_policy_summary(),
+            semantic_engine_mode=self._semantic_engine_mode(),
+        )
+        provider_result = self.llm_provider.generate(context)
+        if not provider_result.available:
+            self._log_llm_fallback(
+                command_id,
+                span,
+                provider_result.provider,
+                decision.reason,
+                provider_result,
+                traditional,
+                "traditional_fallback_after_provider_unavailable",
+            )
+            traditional.reason = f"{traditional.reason}; LLM unavailable: {provider_result.error_type}".strip("; ")
+            traditional.raw_result.update(
+                {
+                    "fallback_triggered": True,
+                    "fallback_reason": decision.reason,
+                    "llm_provider": provider_result.provider,
+                    "llm_available": False,
+                    "llm_error_type": provider_result.error_type,
+                    "llm_error_message": provider_result.error_message,
+                    "llm_latency_ms": provider_result.latency_ms,
+                    "llm_model_status": provider_result.model_status,
+                    "llm_input_text": span,
+                    "llm_model_dir": self.semantic_engine_config.get("local_llm_model_dir", "models/qwen"),
+                    "final_semantic_source": str(traditional.raw_result.get("provider") or "traditional"),
+                }
+            )
+            return traditional
+
+        candidate = self.llm_output_parser.parse_candidate(
+            provider_result.raw_output,
+            provider_result.provider,
+        )
+        llm_semantic = self.llm_output_parser.to_semantic_result(
+            candidate,
+            span,
+            set(self._allowed_llm_intents()),
+            self.action_catalog,
+            decision.reason,
+            provider_result.latency_ms,
+            provider_result.model_status,
+        )
+        llm_semantic.raw_result["rule_nlu_result"] = {
+            "intent": traditional.intent,
+            "is_command": traditional.is_command,
+            "confidence": traditional.confidence,
+            "reason": traditional.reason,
+            "provider": traditional.raw_result.get("provider"),
+        }
+        llm_semantic.raw_result["llm_input_text"] = span
+        llm_semantic.raw_result["llm_model_dir"] = self.semantic_engine_config.get("local_llm_model_dir", "models/qwen")
+        self._log_llm_fallback(
+            command_id,
+            span,
+            provider_result.provider,
+            decision.reason,
+            provider_result,
+            llm_semantic,
+            "llm_candidate_applied",
+        )
+        return llm_semantic
+
+    def _parse_llm_debug_only(self, text: str, command_id: str = "") -> SemanticResult:
+        normalization = self.asr_text_normalizer.normalize(text, self._command_detection_mode())
+        parse_text = normalization.normalized_text
+        traditional = self.qwen.parse_command(parse_text)
+        if normalization.reject_reason:
+            traditional = self._semantic_from_normalization_rejection(normalization)
+        non_command = self.non_command_filter.classify(parse_text)
+        if self._command_detection_mode() == "strict" and non_command.is_non_command:
+            traditional = self._semantic_from_non_command_filter(parse_text, non_command.reason)
+        decision = self.llm_decider.decide(
+            parse_text,
+            traditional,
+            non_command_rejected=bool(non_command.is_non_command),
+            normalization_rejected=bool(normalization.reject_reason),
+        )
+        if not decision.should_call:
+            self._annotate_fallback_decision(traditional, False, decision.reason)
+            traditional.raw_result["final_semantic_source"] = "llm_debug_skipped"
+            return traditional
+        result = self._maybe_apply_llm_fallback(parse_text, parse_text, traditional, command_id)
+        result.raw_result["provider"] = "llm_debug"
+        result.raw_result["final_semantic_source"] = "llm_debug"
+        return result
+
+    def _annotate_fallback_decision(self, semantic: SemanticResult, triggered: bool, reason: str) -> None:
+        semantic.raw_result.setdefault("semantic_engine_mode", self._semantic_engine_mode())
+        semantic.raw_result.setdefault("llm_enabled", bool(self.semantic_engine_config.get("llm_enabled", False)))
+        semantic.raw_result.setdefault("llm_provider", self.semantic_engine_config.get("llm_provider", "disabled"))
+        semantic.raw_result.setdefault("fallback_triggered", triggered)
+        semantic.raw_result.setdefault("fallback_reason", reason)
+        semantic.raw_result.setdefault("final_semantic_source", semantic.raw_result.get("provider", "rule_based"))
+
+    def _allowed_llm_intents(self) -> list[str]:
+        intents = set(self.action_catalog.intents())
+        intents.update(self.catalog.intents())
+        intents.update({"unknown", "none", "unknown_relative_move"})
+        return sorted(intents)
+
+    def _action_catalog_summary(self) -> list[dict[str, Any]]:
+        summary = []
+        for action in self.action_catalog.actions():
+            summary.append(
+                {
+                    "intent": action.intent,
+                    "risk_level": action.risk_level,
+                    "voice_enabled": action.voice_enabled,
+                    "requires_manual_confirm": action.requires_manual_confirm,
+                    "aliases": action.aliases,
+                }
+            )
+        return summary
+
+    def _safety_policy_summary(self) -> str:
+        allowed_real = self.configs.safety.get("allowed_real_actions") or []
+        return (
+            "SafetyController is the only execution authority. LLM output cannot bypass "
+            "confirmation, risk, duration, speed, real-robot allowlist, or adapter checks. "
+            f"real_robot_allowed_actions={allowed_real}"
+        )
+
+    def _semantic_engine_mode(self) -> str:
+        return str(self.semantic_engine_config.get("mode") or "traditional").lower()
+
+    def _llm_meta_fields(self, semantic: SemanticResult) -> dict[str, object]:
+        raw = semantic.raw_result or {}
+        return {
+            "semantic_engine_mode": raw.get("semantic_engine_mode", self._semantic_engine_mode()),
+            "llm_enabled": raw.get("llm_enabled", self.semantic_engine_config.get("llm_enabled", False)),
+            "llm_provider": raw.get("llm_provider", self.semantic_engine_config.get("llm_provider", "disabled")),
+            "llm_model_dir": self.semantic_engine_config.get("local_llm_model_dir", "models/qwen"),
+            "llm_available": raw.get("llm_available"),
+            "fallback_triggered": raw.get("fallback_triggered", False),
+            "fallback_reason": raw.get("fallback_reason", ""),
+            "llm_input_text": raw.get("text") or raw.get("llm_input_text", ""),
+            "llm_raw_output": raw.get("llm_raw_output", ""),
+            "llm_parsed_intent": raw.get("llm_parsed_intent", ""),
+            "llm_confidence": raw.get("llm_confidence"),
+            "llm_needs_confirmation": raw.get("llm_needs_confirmation"),
+            "llm_risk": raw.get("llm_risk", ""),
+            "llm_latency_ms": raw.get("llm_latency_ms"),
+            "llm_error_type": raw.get("llm_error_type", ""),
+            "final_semantic_source": raw.get("final_semantic_source", raw.get("provider", "")),
+        }
+
+    def _llm_log_fields(self, semantic: SemanticResult) -> dict[str, object]:
+        return self._llm_meta_fields(semantic)
+
+    def _dangerous_llm_semantic(self, semantic: SemanticResult) -> bool:
+        raw = semantic.raw_result or {}
+        return bool(
+            semantic.dangerous
+            and (
+                raw.get("provider") in {"llm_fallback", "llm_debug"}
+                or raw.get("source") in {"llm_fallback", "llm_debug"}
+                or raw.get("final_semantic_source") in {"llm_fallback", "llm_debug"}
+            )
+        )
+
+    def _log_llm_fallback(
+        self,
+        command_id: str,
+        input_text: str,
+        provider: str,
+        fallback_reason: str,
+        provider_result,
+        final_semantic: SemanticResult,
+        decision: str,
+    ) -> None:
+        fields = self._llm_meta_fields(final_semantic)
+        self.logger.log(
+            "nlu",
+            "llm_fallback",
+            command_id=command_id,
+            semantic_engine_mode=self._semantic_engine_mode(),
+            llm_enabled=bool(self.semantic_engine_config.get("llm_enabled", False)),
+            llm_provider=provider,
+            llm_model_dir=self.semantic_engine_config.get("local_llm_model_dir", "models/qwen"),
+            llm_available=provider_result.available,
+            fallback_triggered=True,
+            fallback_reason=fallback_reason,
+            llm_input_text=input_text,
+            llm_raw_output=provider_result.raw_output,
+            llm_parsed_intent=fields.get("llm_parsed_intent"),
+            llm_confidence=fields.get("llm_confidence"),
+            llm_needs_confirmation=fields.get("llm_needs_confirmation"),
+            llm_risk=fields.get("llm_risk"),
+            llm_latency_ms=provider_result.latency_ms,
+            llm_error_type=provider_result.error_type or fields.get("llm_error_type"),
+            final_semantic_source=fields.get("final_semantic_source"),
+            final_intent=final_semantic.intent,
+            final_is_command=final_semantic.is_command,
+            decision=decision,
+        )
 
     def _looks_like_relative_fuzzy(self, text: str) -> bool:
         lowered = text.lower()
@@ -485,11 +763,15 @@ class SessionRuntime:
             for _, semantic in semantic_items
         )
         has_non_executable = any(
-            getattr(semantic, "rejected_by_nlu", False) or getattr(semantic, "executable", True) is False
+            not self._dangerous_llm_semantic(semantic)
+            and (getattr(semantic, "rejected_by_nlu", False) or getattr(semantic, "executable", True) is False)
             for _, semantic in semantic_items
         )
         needs_confirmation = (
-            any(semantic.need_clarification for _, semantic in semantic_items)
+            any(
+                semantic.need_clarification and not self._dangerous_llm_semantic(semantic)
+                for _, semantic in semantic_items
+            )
             or has_low_fuzzy
             or has_low_confidence
             or has_non_executable

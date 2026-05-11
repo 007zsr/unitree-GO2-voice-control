@@ -30,6 +30,18 @@ class SafetyController:
         if command.intent == "stop":
             return SafetyDecision(True, "stop has highest priority", command)
 
+        early_spec = self.catalog.get(command.intent)
+        early_risk_level = str(
+            command.metadata.get("risk_level")
+            or semantic.risk_level
+            or (early_spec.risk_level if early_spec else "")
+            or "safe"
+        ).lower()
+        if early_risk_level == "dangerous":
+            return SafetyDecision(False, "dangerous action disabled for voice control", command)
+        if bool(self.config.get("reject_dangerous_semantics", True)) and semantic.dangerous:
+            return SafetyDecision(False, "semantic result marked request as dangerous", command)
+
         if bool(self.config.get("reject_need_clarification", True)) and semantic.need_clarification:
             return SafetyDecision(False, "semantic result needs clarification", command)
 
@@ -62,11 +74,23 @@ class SafetyController:
             return SafetyDecision(False, "catalog action was rejected by NLU policy", command)
         if risk_level == "disabled":
             return SafetyDecision(False, "disabled catalog action cannot execute", command)
+        if risk_level == "dangerous":
+            return SafetyDecision(False, "dangerous action disabled for voice control", command)
         if not bool(spec.mock_enabled) and self.robot_mode != "go2":
             return SafetyDecision(False, "catalog action is disabled for mock execution", command)
         if self.robot_mode == "go2":
-            if risk_level == "dangerous":
-                return SafetyDecision(False, "dangerous action disabled for real robot", command)
+            allowed_real_actions = self.config.get("allowed_real_actions")
+            if allowed_real_actions:
+                allowed = {str(item).strip() for item in allowed_real_actions if str(item).strip()}
+                if command.intent not in allowed:
+                    return SafetyDecision(
+                        False,
+                        str(
+                            self.config.get("allowed_real_actions_reason")
+                            or "action not allowed in this real robot test stage"
+                        ),
+                        command,
+                    )
             if risk_level == "caution" and not bool(
                 self.config.get("allow_caution_actions_on_real_robot", False)
             ):

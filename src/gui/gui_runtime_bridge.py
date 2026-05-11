@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import threading
 from pathlib import Path
 from typing import Callable
@@ -14,8 +15,12 @@ from src.audio.audio_env import AudioDependencyStatus, check_audio_dependencies
 from src.config import ConfigSet, deep_merge, load_yaml, write_yaml
 from src.gui.listening_worker import ContinuousListeningWorker, OneShotVoiceWorker
 from src.logging.pipeline_logger import PipelineLogger
-from src.models import CommandFlowResult, PipelineDebugResult, new_command_id
+from src.models import CommandFlowResult, PipelineDebugResult, new_command_id, utc_now_iso
+from src.nlu.llm_provider_factory import build_llm_provider
+from src.nlu.local_qwen_provider import check_local_qwen_model
+from src.nlu.semantic_engine_config import semantic_engine_config
 from src.runtime.session_runtime import SessionRuntime
+from src.runtime.runtime_overrides import apply_runtime_overrides
 
 
 DebugCallback = Callable[[PipelineDebugResult], None]
@@ -23,8 +28,13 @@ EventCallback = Callable[[str], None]
 
 
 class GuiRuntimeBridge:
-    def __init__(self, config_dir: str | Path | None = None):
+    def __init__(
+        self,
+        config_dir: str | Path | None = None,
+        runtime_overrides: dict[str, object] | None = None,
+    ):
         self.configs = ConfigSet.load(config_dir)
+        apply_runtime_overrides(self.configs, runtime_overrides)
         self.runtime = SessionRuntime(self.configs)
         self._started = False
         self._listener: ContinuousListeningWorker | None = None
@@ -45,8 +55,10 @@ class GuiRuntimeBridge:
                 "audio_status": self._last_audio_status.to_dict(),
                 "asr_status": self._last_asr_status.to_dict(),
                 "qwen": self.configs.models.get("qwen", {}),
+                "semantic_engine": self.runtime.semantic_engine_config,
                 "asr": self.configs.models.get("asr", {}),
                 "settings": self.get_settings(),
+                "real_demo": self.real_demo_settings(),
             }
         )
 
@@ -68,8 +80,12 @@ class GuiRuntimeBridge:
 
     def process_text_once(self, text: str, input_type: str = "text") -> PipelineDebugResult:
         try:
+            before_state = self._capture_real_demo_state("before")
             flow = self.runtime.process_text(text)
             result = self._to_debug_result(input_type, flow)
+            after_state = self._capture_real_demo_state("after")
+            self._attach_real_demo_state(result, before_state, after_state)
+            self._log_real_demo_command(result, before_state, after_state)
             self.pipeline_logger.log_one_shot_result(result, "text")
             return result
         except Exception as exc:
@@ -89,11 +105,15 @@ class GuiRuntimeBridge:
             self._log_audio_result(input_type, result)
             return result
         try:
+            before_state = self._capture_real_demo_state("before")
             flow = self.runtime.process_audio(
                 audio_path,
                 deduplicate=input_type == "continuous_audio",
             )
             result = self._to_debug_result(input_type, flow)
+            after_state = self._capture_real_demo_state("after")
+            self._attach_real_demo_state(result, before_state, after_state)
+            self._log_real_demo_command(result, before_state, after_state)
             self._log_audio_result(input_type, result)
             return result
         except Exception as exc:
@@ -140,6 +160,7 @@ class GuiRuntimeBridge:
                 "continuous_listening": self.configs.app.get("continuous_listening", {}),
                 "command_detection": self.configs.app.get("command_detection", {}),
                 "recognition": self.configs.app.get("recognition", {}),
+                "semantic_engine": self.runtime.semantic_engine_config,
                 "ui": self.configs.app.get("ui", {}),
             },
             audio_status=status.to_dict(),
@@ -284,13 +305,44 @@ class GuiRuntimeBridge:
             qwen_dir = resolve_project_path(str(qwen_config.get("local_model_dir", "models/qwen")))
             status["qwen_model_dir"] = str(qwen_dir)
             status["qwen_mode"] = str(qwen_config.get("provider") or qwen_config.get("mode") or "rule_based")
+        llm_status = self.runtime.llm_provider.status()
+        status["semantic_engine"] = dict(self.runtime.semantic_engine_config)
+        status["llm_provider"] = self.runtime.semantic_engine_config.get("llm_provider", "disabled")
+        status["llm_enabled"] = self.runtime.semantic_engine_config.get("llm_enabled", False)
+        status["llm_available"] = bool(llm_status.get("available"))
+        status["llm_model_status"] = llm_status
         status["portable_status"] = "OK" if asr_status.is_project_venv else "WARN"
         status["logs"] = self.pipeline_logger.get_current_log_paths()
         status["settings"] = self.get_settings()
+        status["real_demo"] = self.real_demo_settings()
+        status["interface"] = str(self.configs.go2.get("network_interface") or "")
         return status
+
+    def real_demo_settings(self) -> dict[str, object]:
+        real_demo = self.configs.app.get("real_demo", {})
+        if not isinstance(real_demo, dict):
+            real_demo = {}
+        allowed = self.configs.safety.get("allowed_real_actions") or real_demo.get("allowed_real_actions") or []
+        return {
+            "enabled": bool(real_demo.get("enabled", False)),
+            "allowed_real_actions": list(allowed) if isinstance(allowed, list) else [],
+            "continuous_requires_confirmation": bool(real_demo.get("continuous_requires_confirmation", True)),
+            "continuous_confirm_token": str(real_demo.get("continuous_confirm_token") or "ENABLE_REAL_CONTINUOUS"),
+            "dangerous_actions_disabled": bool(real_demo.get("dangerous_actions_disabled", True)),
+            "interface": str(self.configs.go2.get("network_interface") or ""),
+            "motion_limits": self.configs.go2.get("real_demo", {}),
+        }
+
+    def check_qwen_model_status(self) -> dict[str, object]:
+        semantic = semantic_engine_config(self.configs.app, self.configs.models)
+        return check_local_qwen_model(
+            str(semantic.get("local_llm_model_dir", "models/qwen")),
+            self.configs.config_dir.parent,
+        ).to_dict()
 
     def get_settings(self) -> dict[str, object]:
         continuous = self.configs.app.get("continuous_listening", {})
+        semantic = semantic_engine_config(self.configs.app, self.configs.models)
         return {
             "ui_language": str(self.configs.app.get("ui", {}).get("language", "en")),
             "recognition_preference": str(
@@ -302,6 +354,15 @@ class GuiRuntimeBridge:
             "deduplicate_enabled": bool(continuous.get("deduplicate_enabled", True)),
             "deduplicate_window_sec": float(continuous.get("deduplicate_window_sec", 3.0)),
             "same_intent_cooldown_sec": float(continuous.get("same_intent_cooldown_sec", 2.5)),
+            "semantic_engine_mode": str(semantic.get("mode", "traditional")),
+            "llm_enabled": bool(semantic.get("llm_enabled", False)),
+            "llm_provider": str(semantic.get("llm_provider", "local_qwen")),
+            "llm_fallback_min_confidence": float(semantic.get("llm_fallback_min_confidence", 0.60)),
+            "local_llm_model_dir": str(semantic.get("local_llm_model_dir", "models/qwen")),
+            "llm_timeout_seconds": float(semantic.get("llm_timeout_seconds", 5.0)),
+            "llm_max_output_tokens": int(semantic.get("llm_max_output_tokens", 128)),
+            "llm_temperature": float(semantic.get("llm_temperature", 0.0)),
+            "llm_allow_remote_api": bool(semantic.get("llm_allow_remote_api", False)),
         }
 
     def save_user_settings(self, settings: dict[str, object]) -> None:
@@ -316,6 +377,17 @@ class GuiRuntimeBridge:
                 "deduplicate_window_sec": float(settings.get("deduplicate_window_sec", 3.0)),
                 "same_intent_cooldown_sec": float(settings.get("same_intent_cooldown_sec", 2.5)),
             },
+            "semantic_engine": {
+                "mode": str(settings.get("semantic_engine_mode", "traditional")),
+                "llm_enabled": bool(settings.get("llm_enabled", False)),
+                "llm_provider": str(settings.get("llm_provider", "local_qwen")),
+                "llm_fallback_min_confidence": float(settings.get("llm_fallback_min_confidence", 0.60)),
+                "local_llm_model_dir": str(settings.get("local_llm_model_dir", "models/qwen")),
+                "llm_timeout_seconds": float(settings.get("llm_timeout_seconds", 5.0)),
+                "llm_max_output_tokens": int(settings.get("llm_max_output_tokens", 128)),
+                "llm_temperature": float(settings.get("llm_temperature", 0.0)),
+                "llm_allow_remote_api": bool(settings.get("llm_allow_remote_api", False)),
+            },
         }
         merged = deep_merge(existing, updates)
         write_yaml(path, merged)
@@ -323,6 +395,12 @@ class GuiRuntimeBridge:
         self._merge_into(self.configs.user_settings, updates)
         self.runtime.qwen.config["command_detection"] = self.configs.app.get("command_detection", {})
         self.runtime.qwen.config["recognition"] = self.configs.app.get("recognition", {})
+        self.runtime.semantic_engine_config = semantic_engine_config(self.configs.app, self.configs.models)
+        self.runtime.llm_decider.update_config(self.runtime.semantic_engine_config)
+        self.runtime.llm_provider = build_llm_provider(
+            self.runtime.semantic_engine_config,
+            self.configs.config_dir.parent,
+        )
         self.pipeline_logger.log_gui_event("settings saved", extra={"settings": self.get_settings()})
 
     def get_supported_commands(self) -> list[dict[str, object]]:
@@ -511,7 +589,7 @@ class GuiRuntimeBridge:
             adapter_result = {"plan_results": flow.plan_results}
         is_expected_skip = (
             bool(flow.semantic and not flow.semantic.is_command)
-            or flow.stage in {"deduplicate", "confirmation"}
+            or flow.stage in {"deduplicate", "confirmation", "semantic_debug"}
         )
         error_stage = None if flow.accepted or is_expected_skip else flow.stage
         error_message = None if flow.accepted or is_expected_skip else flow.message
@@ -532,6 +610,89 @@ class GuiRuntimeBridge:
             error_stage=error_stage,
             error_message=error_message,
         )
+
+    def _capture_real_demo_state(self, label: str) -> dict[str, object] | None:
+        if not bool(self.real_demo_settings().get("enabled")):
+            return None
+        try:
+            return {
+                "label": label,
+                "state": self.runtime.adapter.get_state().to_dict(),
+                "error": "",
+            }
+        except Exception as exc:
+            return {
+                "label": label,
+                "state": None,
+                "error": f"{exc.__class__.__name__}: {exc}",
+            }
+
+    def _attach_real_demo_state(
+        self,
+        result: PipelineDebugResult,
+        before_state: dict[str, object] | None,
+        after_state: dict[str, object] | None,
+    ) -> None:
+        if before_state is None and after_state is None:
+            return
+        if not isinstance(result.adapter_result, dict):
+            result.adapter_result = {}
+        result.adapter_result["high_state_before"] = before_state
+        result.adapter_result["high_state_after"] = after_state
+        result.adapter_result["adapter"] = self.runtime.adapter.__class__.__name__
+
+    def _log_real_demo_command(
+        self,
+        result: PipelineDebugResult,
+        before_state: dict[str, object] | None,
+        after_state: dict[str, object] | None,
+    ) -> None:
+        if not bool(self.real_demo_settings().get("enabled")):
+            return
+        path = self.pipeline_logger.paths.root / "commands.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "timestamp": utc_now_iso(),
+            "session_id": self.pipeline_logger.session_id,
+            "command_id": result.command_id,
+            "transcript": result.transcript_text,
+            "intent": (result.robot_command or {}).get("intent") if result.robot_command else "",
+            "command_plan": result.command_plan,
+            "safety": result.safety_decision,
+            "adapter": self.runtime.adapter.__class__.__name__,
+            "sdk_method": self._sdk_method(result.adapter_result),
+            "sdk_return": self._sdk_return(result.adapter_result),
+            "adapter_result": result.adapter_result,
+            "high_state_before": before_state,
+            "high_state_after": after_state,
+            "observed_note": "",
+        }
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
+
+    def _sdk_method(self, adapter_result: object) -> str:
+        raw = adapter_result.get("raw_response") if isinstance(adapter_result, dict) else None
+        if isinstance(raw, dict) and raw.get("sdk_method"):
+            return str(raw.get("sdk_method"))
+        if isinstance(adapter_result, dict) and isinstance(adapter_result.get("plan_results"), list):
+            for item in adapter_result.get("plan_results") or []:
+                result = item.get("adapter_result") if isinstance(item, dict) else None
+                method = self._sdk_method(result)
+                if method:
+                    return method
+        return ""
+
+    def _sdk_return(self, adapter_result: object) -> object:
+        raw = adapter_result.get("raw_response") if isinstance(adapter_result, dict) else None
+        if isinstance(raw, dict) and "code" in raw:
+            return raw.get("code")
+        if isinstance(adapter_result, dict) and isinstance(adapter_result.get("plan_results"), list):
+            for item in adapter_result.get("plan_results") or []:
+                result = item.get("adapter_result") if isinstance(item, dict) else None
+                value = self._sdk_return(result)
+                if value != "":
+                    return value
+        return ""
 
     def _asr_diagnostics(self, flow: CommandFlowResult) -> dict[str, object] | None:
         if flow.transcript is None:

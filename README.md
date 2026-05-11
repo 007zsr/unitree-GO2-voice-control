@@ -3,12 +3,13 @@
 A voice-control software prototype for the Unitree Go2 robot dog.
 
 The project is currently Mock-first. Real Go2 movement is disabled by default,
-and the v1.0.0 release is intended for GUI, ASR, NLU, command planning, safety,
-queueing, and simulated execution tests.
+and the V1.1 release is intended for GUI, ASR, semantic parsing, LLM fallback
+configuration, command planning, safety, queueing, and simulated execution
+tests.
 
 ## Current Pipeline
 
-Voice input -> Whisper speech recognition -> semantic understanding -> command
+Voice input -> Whisper speech recognition -> semantic engine -> command
 planning -> safety check -> simulated execution
 
 Implemented flow:
@@ -16,6 +17,11 @@ Implemented flow:
 ```text
 GUI -> Whisper ASR -> NLU -> CommandPlan -> Safety -> CommandQueue -> MockAdapter
 ```
+
+V1.1 keeps the default semantic engine in traditional mode and adds optional
+LLM fallback plumbing behind the existing command planning and safety layers.
+LLM output is parsed into CommandPlan-compatible intents and never calls the
+robot adapter directly.
 
 ## Features
 
@@ -25,6 +31,10 @@ GUI -> Whisper ASR -> NLU -> CommandPlan -> Safety -> CommandQueue -> MockAdapte
 - Continuous listening
 - Whisper ASR
 - Rule-based NLU with Chinese, English, and mixed-language command support
+- Semantic engine modes: traditional, llm_fallback, and llm_only_debug
+- LLM provider base layer with mock provider tests
+- Local Qwen provider availability checks without eager model loading
+- Legacy config aliases for LLM fallback settings
 - CommandPlan sequential commands
 - Fuzzy command recognition
 - Safety checks
@@ -81,7 +91,17 @@ models/whisper/
 
 For example, a local Whisper model may exist as `models/whisper/base.pt`, but it
 is intentionally ignored by Git. If model distribution is needed, attach the
-model to a GitHub Release or use Git LFS after explicitly enabling that workflow.
+model to a GitHub Release or use Git LFS after explicitly enabling that
+workflow.
+
+Local Qwen model directories, when used, belong under:
+
+```text
+models/qwen/
+```
+
+Qwen model detection is read-only. Unit tests use mock providers and do not run
+real Qwen inference.
 
 ## Directory Map
 
@@ -98,4 +118,4 @@ More commands are listed in `docs/COMMANDS.md`. Environment details are in
 
 ## Version
 
-Current version: v1.0.0
+Current version: v1.1.0

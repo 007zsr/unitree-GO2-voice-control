@@ -40,6 +40,22 @@ class NonCommandFilter:
         "不要真的",
         "不是真的",
     ]
+    EN_CHITCHAT_PATTERNS = [
+        r"^\s*(hello|hi|hey)\s*[.!?。！？，,]*\s*$",
+        r"^\s*(how are you|how are you doing|what's up|whats up)\s*[.!?。！？，,]*\s*$",
+        r"^\s*(just chatting,?\s*)?how are you\s*[.!?。！？，,]*\s*$",
+        r"\bjust\s+chatting\b",
+        r"\bwhat(?:'s| is)\s+the\s+weather\b",
+    ]
+    ZH_CHITCHAT_MARKERS = [
+        "你好",
+        "您好",
+        "今天天气怎么样",
+        "天气怎么样",
+        "最近怎么样",
+        "你好吗",
+        "聊天",
+    ]
     STOP_EXCEPTIONS_EN = [
         r"^\s*(?:please\s+)?(?:do\s+not|don't)\s+move\s*[.!?。！？，,]*\s*$",
         r"^\s*(?:please\s+)?(?:hold|stay|stand)\s+still\s*[.!?。！？，,]*\s*$",
@@ -68,6 +84,11 @@ class NonCommandFilter:
             return NonCommandDecision(True, "quoted_or_example_sentence")
         if any(marker in original for marker in self.ZH_MARKERS):
             return NonCommandDecision(True, "quoted_or_example_sentence")
+        if any(re.search(pattern, lowered) for pattern in self.EN_CHITCHAT_PATTERNS):
+            return NonCommandDecision(True, "chitchat")
+        compact_zh = re.sub(r"[^\u4e00-\u9fff]", "", original)
+        if compact_zh in self.ZH_CHITCHAT_MARKERS or any(marker in original for marker in ["天气怎么样", "你好吗"]):
+            return NonCommandDecision(True, "chitchat")
         return NonCommandDecision(False)
 
     def is_explicit_stop_command(self, text: str) -> bool:
